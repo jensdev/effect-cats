@@ -13,30 +13,22 @@ export class Cats extends Context.Tag("Cats")<
 >() {}
 
 export const makeCats = Effect.gen(function* () {
-  const cats = yield* Ref.make(HashMap.empty<CatId, Cat>());
+  const catsData = yield* CatsData;
 
   const findById = Effect.fn("Cats.findById")(function* (id: string) {
-    yield* Effect.log(`findById${id}`).pipe(Effect.annotateLogs({ id }));
-
-    return yield* Ref.get(cats).pipe(
-      Effect.flatMap(HashMap.get(id)),
-      Effect.catchTag(
-        "NoSuchElementException",
-        () => new CatNotFoundError({ id }),
-      ),
-    );
+    yield* Effect.log(`findById ${id}`).pipe(Effect.annotateLogs({ id }));
+    return yield* catsData.findById(id);
   });
 
   const persist = Effect.fn("Cats.persist")(function* (cat: Cat) {
-    yield* Effect.log(`persist cat ${cat}`).pipe(Effect.annotateLogs({ cat }));
+    yield* Effect.log(`persist cat ${cat.name}`).pipe(Effect.annotateLogs({ catId: cat.id }));
+    yield* catsData.persist(cat);
     return yield* Effect.succeed("Saved");
   });
 
   const findAll = Effect.fn("Cats.findAll")(function* () {
     yield* Effect.log("findAll cats");
-    return yield* Ref.get(cats).pipe(
-      Effect.map(HashMap.toValues),
-    );
+    return yield* catsData.findAll();
   });
 
   return {
