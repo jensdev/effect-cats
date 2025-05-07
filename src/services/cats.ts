@@ -1,6 +1,7 @@
-import { Context, Effect, HashMap, Layer, Ref } from "effect";
-import { Cat, CatId } from "../domain/cats";
+import { Context, Effect, Layer } from "effect";
+import { Cat } from "../domain/cats";
 import { CatNotFoundError } from "../domain/errors";
+import { CatsData } from "../data-access/cats-data";
 
 export class Cats extends Context.Tag("Cats")<
   Cats,
