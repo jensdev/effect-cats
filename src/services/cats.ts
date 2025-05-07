@@ -34,8 +34,7 @@ export const makeCats = Effect.gen(function* () {
   const findAll = Effect.fn("Cats.findAll")(function* () {
     yield* Effect.log("findAll cats");
     return yield* Ref.get(cats).pipe(
-      Effect.map(HashMap.values),
-      Effect.map(Array.from),
+      Effect.map(HashMap.toValues),
     );
   });
 
