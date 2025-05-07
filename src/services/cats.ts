@@ -7,6 +7,7 @@ export class Cats extends Context.Tag("Cats")<
   {
     readonly findById: (id: string) => Effect.Effect<Cat, CatNotFoundError>;
     readonly persist: (cat: Cat) => Effect.Effect<string>;
+    readonly findAll: () => Effect.Effect<ReadonlyArray<Cat>>;
   }
 >() {}
 
@@ -30,9 +31,18 @@ export const makeCats = Effect.gen(function* () {
     return yield* Effect.succeed("Saved");
   });
 
+  const findAll = Effect.fn("Cats.findAll")(function* () {
+    yield* Effect.log("findAll cats");
+    return yield* Ref.get(cats).pipe(
+      Effect.map(HashMap.values),
+      Effect.map(Array.from),
+    );
+  });
+
   return {
     findById,
     persist,
+    findAll,
   } as const; // Using "as const" to keep the types readonly and strict
 });
 
