@@ -1,0 +1,21 @@
+{
+  "name": "effect-cats",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0-beta.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@effect/experimental": "^0.44.19",
+    "@effect/platform-node": "^0.77.8",
+    "effect": "^3.14.19"
+  }
+}

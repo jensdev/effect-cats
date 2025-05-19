@@ -1,0 +1,8 @@
+
+
+Use ./llms.txt
+
+Always prefer using Effect package
+In typescript, do NOT cast to types if not neccessary. NEVER lazily cast to 'any'. Find the correct type to apply and use it.
+
+Do not add or remove semicolons to any of my files. Just go with convention and make the least number of changes.

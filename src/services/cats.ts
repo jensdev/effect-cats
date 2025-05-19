@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from "effect";
+import { CatsData } from "../data-access/cats-data";
 import { Cat } from "../domain/cats";
 import { CatNotFoundError } from "../domain/errors";
-import { CatsData } from "../data-access/cats-data";
 
 export class Cats extends Context.Tag("Cats")<
   Cats,
@@ -9,6 +9,7 @@ export class Cats extends Context.Tag("Cats")<
     readonly findById: (id: string) => Effect.Effect<Cat, CatNotFoundError>;
     readonly persist: (cat: Cat) => Effect.Effect<string>;
     readonly findAll: () => Effect.Effect<ReadonlyArray<Cat>>;
+    readonly removeById: (id: string) => Effect.Effect<void, CatNotFoundError>;
   }
 >() {}
 
@@ -21,7 +22,9 @@ export const makeCats = Effect.gen(function* () {
   });
 
   const persist = Effect.fn("Cats.persist")(function* (cat: Cat) {
-    yield* Effect.log(`persist cat ${cat.name}`).pipe(Effect.annotateLogs({ catId: cat.id }));
+    yield* Effect.log(`persist cat ${cat.name}`).pipe(
+      Effect.annotateLogs({ catId: cat.id }),
+    );
     yield* catsData.persist(cat);
     return yield* Effect.succeed("Saved");
   });
@@ -31,10 +34,16 @@ export const makeCats = Effect.gen(function* () {
     return yield* catsData.findAll();
   });
 
+  const removeById = Effect.fn("Cats.removeById")(function* (id: string) {
+    yield* Effect.log(`removeById ${id}`).pipe(Effect.annotateLogs({ id }));
+    return yield* catsData.removeById(id);
+  });
+
   return {
     findById,
     persist,
     findAll,
+    removeById,
   } as const; // Using "as const" to keep the types readonly and strict
 });
 

@@ -8,6 +8,7 @@ export class CatsData extends Context.Tag("CatsData")<
     readonly findById: (id: string) => Effect.Effect<Cat, CatNotFoundError>;
     readonly persist: (cat: Cat) => Effect.Effect<void>;
     readonly findAll: () => Effect.Effect<ReadonlyArray<Cat>>;
+    readonly removeById: (id: string) => Effect.Effect<void, CatNotFoundError>;
   }
 >() {}
 
@@ -32,10 +33,20 @@ export const makeCatsData = Effect.gen(function* () {
       Effect.map(Array.fromIterable),
     );
 
+  const removeById = (id: string): Effect.Effect<void, CatNotFoundError> =>
+    Ref.get(catsState).pipe(
+      Effect.flatMap((catsMap) =>
+        HashMap.has(catsMap, id as CatId)
+          ? Ref.update(catsState, HashMap.remove(id as CatId))
+          : Effect.fail(new CatNotFoundError({ id })),
+      ),
+    );
+
   return {
     findById,
     persist,
     findAll,
+    removeById,
   } as const;
 });
 
