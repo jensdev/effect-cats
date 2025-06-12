@@ -7,8 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "dev": "tsc -w -p tsconfig.json & nodemon dist/main.js",
-    "lint": "biome lint ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "biome lint ./src"
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.0-beta.2",
