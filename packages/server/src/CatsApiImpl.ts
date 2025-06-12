@@ -9,8 +9,12 @@ export const CatsApiLive = HttpApiBuilder.group(CatsApi, "cats", (handlers) =>
     return handlers
       .handle("getAllCats", () => catsRepo.getAll)
       .handle("getCatById", ({ path: { id } }) => catsRepo.getById(id))
-      .handle("createCat", ({ payload: { name, breed, age } }) => catsRepo.create(name, breed, age))
-      .handle("updateCat", ({ path: { id }, payload }) => catsRepo.update(id, payload))
+      .handle("createCat", ({ payload: { name, breed, age } }) =>
+        catsRepo.create(name, breed, age),
+      )
+      .handle("updateCat", ({ path: { id }, payload }) =>
+        catsRepo.update(id, payload),
+      )
       .handle("deleteCat", ({ path: { id } }) => catsRepo.remove(id));
-  })
+  }),
 );
