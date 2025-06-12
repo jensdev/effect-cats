@@ -14,8 +14,10 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@effect/experimental": "^0.44.19",
-    "@effect/platform-node": "^0.77.8",
-    "effect": "^3.14.19"
+    "@effect/experimental": "^0.48.10",
+    "@effect/platform": "^0.84.9",
+    "@effect/platform-node": "^0.85.14",
+    "@effect/schema": "^0.75.5",
+    "effect": "^3.16.5"
   }
 }
