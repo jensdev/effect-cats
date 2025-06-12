@@ -7,15 +7,13 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "dev": "tsc -w -p tsconfig.json & nodemon dist/main.js",
-    "lint": "biome lint ./src",
-    "test": "vitest run"
+    "lint": "biome lint ./src"
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.0-beta.2",
     "@types/node": "^24.0.1",
     "nodemon": "^3.0.0",
-    "typescript": "^5.8.3",
-    "vitest": "^2.0.0"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@effect-cats/domain": "*",
