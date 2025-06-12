@@ -1,0 +1,25 @@
+{
+  "name": "@effect-cats/server",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/main.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "dev": "tsc -w -p tsconfig.json & nodemon dist/main.js",
+    "lint": "biome lint ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0-beta.2",
+    "@types/node": "^24.0.1",
+    "nodemon": "^3.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@effect-cats/domain": "0.1.0",
+    "@effect/platform": "^0.84.9",
+    "@effect/platform-node": "^0.85.14",
+    "effect": "^3.16.5"
+  }
+}

@@ -1,5 +1,5 @@
 import { HttpApiBuilder } from "@effect/platform";
-import { CatsApi } from "@template/domain/CatsApi";
+import { CatsApi } from "@effect-cats/domain/CatsApi";
 import { Effect, Layer } from "effect";
 import { CatsRepository } from "./CatsRepository.js";
 

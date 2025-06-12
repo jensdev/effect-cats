@@ -1,5 +1,5 @@
-import { CatNotFound } from "@template/domain/CatsApi.js";
-import { Cat, CatId } from "@template/domain/cats.js";
+import { CatNotFound } from "@effect-cats/domain/CatsApi";
+import { Cat, CatId } from "@effect-cats/domain/cats";
 import { Context, Data, Effect, Layer, Option, ReadonlyArray } from "effect";
 
 // Define the interface for our repository
@@ -12,7 +12,7 @@ export interface CatsRepository {
 }
 
 // Create a context tag for the repository
-export const CatsRepository = Context.Tag<CatsRepository>("CatsRepository");
+export const CatsRepository = Context.Tag<CatsRepository>("CatsRepositoryService");
 
 // Implement an in-memory version of the repository
 export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
@@ -21,14 +21,14 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
 
   const getNextId = (): CatId => CatId(nextId++);
 
-  return CatsRepository.of({
+  return {
     getAll: Effect.sync(() => ReadonlyArray.fromIterable(catsStore.values())),
     getById: (id: CatId) =>
       Option.fromNullable(catsStore.get(id)).pipe(
         Effect.mapError(() => new CatNotFound({ id }))
       ),
     create: (name: string, breed: string, age: number) =>
-      Effect.sync(()_ => {
+      Effect.sync(() => {
         const id = getNextId();
         const newCat = new Cat({ id, name, breed, age });
         catsStore.set(id, newCat);
@@ -51,6 +51,6 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
           return Effect.void;
         }
         return Effect.fail(new CatNotFound({ id }));
-      }).pipe(Effect.flatten),
-  });
+      }).pipe(Effect.flatten)
+  };
 });
