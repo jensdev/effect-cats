@@ -38,6 +38,7 @@ The following API endpoints are available:
 *   `PATCH /cats/:id`: Update an existing cat.
     *   Payload: `{ "name"?: "string", "breed"?: "string", "age"?: "number" }`
 *   `DELETE /cats/:id`: Delete a cat by its ID.
+*   Swagger UI: `http://localhost:3000/docs`
 
 ## Getting Started
 
