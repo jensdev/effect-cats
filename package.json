@@ -1,9 +1,19 @@
 {
   "name": "effect-cats",
   "version": "1.0.0",
+  "packageManager": "npm@9.2.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "format": "biome format --write ."
   },
   "keywords": [],
   "author": "",
@@ -11,6 +21,7 @@
   "description": "",
   "devDependencies": {
     "@biomejs/biome": "2.0.0-beta.2",
+    "turbo": "^2.5.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {
