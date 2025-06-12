@@ -2,9 +2,9 @@ import { DevTools } from "@effect/experimental";
 import { NodeRuntime, NodeSocket, NodeHttpServer, HttpServer } from "@effect/platform-node";
 import { Router } from "@effect/platform";
 import { Effect, Layer, pipe } from "effect";
-import catRoutes, { CatsService, InMemoryCatsServiceLive } from "./routes/cat-routes";
-// import { Cats, CatsLayer } from "./services/cats"; // Original Cats service
-import { CatsDataLayer } from "./data-access/cats-data"; // Assuming this is still needed for a more complete service
+import catRoutes from "./routes/cat-routes"; // InMemoryCatsServiceLive and CatsService removed
+import { CatsLayer } from "./services/cats"; // Uncommented and Cats tag removed as it's not used directly here
+import { CatsDataLayer } from "./data-access/cats-data";
 
 // Define the main router, integrating catRoutes
 // It's common to prefix API routes, e.g., under /api
@@ -22,11 +22,9 @@ const HttpApp = HttpServer.serve(AppRouter).pipe(
 const program = HttpApp;
 
 // Define the application layer
-// Providing InMemoryCatsServiceLive for the CatsService tag used in catRoutes.
-// CatsDataLayer is kept as per original structure, though InMemoryCatsServiceLive is self-contained.
-// If CatsLayer (from ./services/cats) is the intended provider for CatsService,
-// it would replace InMemoryCatsServiceLive, assuming compatibility.
-const AppLayer = Layer.merge(InMemoryCatsServiceLive, CatsDataLayer);
+// Define the application layer
+// Now providing the actual CatsLayer and CatsDataLayer.
+const AppLayer = Layer.merge(CatsLayer, CatsDataLayer);
 
 //       ┌─── Effect<never, Error, void> - this is the typical signature for a server program
 //       ▼

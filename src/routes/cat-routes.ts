@@ -1,179 +1,102 @@
 import { Router, HttpServer, HttpError } from "@effect/platform";
-import { Effect, Schema, Context } from "effect";
+import { Effect, Schema, Equivalence } from "effect";
+import { Cats } from "../../services/cats"; // Corrected import path
+import { Cat, CatId } from "../../domain/cats"; // Corrected import path
+import { CatNotFoundError } from "../../domain/errors"; // Corrected import path
+import { v4 as uuidv4 } from "uuid"; // For generating IDs
 
-// Assuming Cat schema is defined in ../schemas/cat-schema
-// And Cats service is defined in ../services/cat-service
+// HTTP Request/Response Schemas (derived from Domain Cat)
 
-// Placeholder Cat Schema
-const CatSchema = Schema.struct({
-  id: Schema.string,
-  name: Schema.string,
-  age: Schema.number,
-});
-type Cat = Schema.Schema.infer<typeof CatSchema>;
+// For POST requests: Omitting 'id' as it will be generated.
+const CreateCatRequestSchema = Schema.omit(Cat, "id");
 
-const CreateCatSchema = Schema.omit(CatSchema, "id");
-type CreateCat = Schema.Schema.infer<typeof CreateCatSchema>;
-
-const UpdateCatSchema = Schema.partial(CreateCatSchema)
-type UpdateCat = Schema.Schema.infer<typeof UpdateCatSchema>;
-
-
-// Placeholder Cats Service
-interface CatsService {
-  getCats: Effect.Effect<Cat[], Error>;
-  getCatById: (id: string) => Effect.Effect<Cat, Error>;
-  createCat: (cat: CreateCat) => Effect.Effect<Cat, Error>;
-  updateCat: (id: string, cat: UpdateCat) => Effect.Effect<Cat, Error>;
-  deleteCat: (id: string) => Effect.Effect<{ message: string }, Error>;
-}
-
-export const CatsService = Context.Tag<CatsService>("CatsService");
-
-// In a real application, this would be provided by the service implementation
-export const InMemoryCatsServiceLive = Layer.effect(
-  CatsService,
-  Effect.succeed({
-    cats: new Map<string, Cat>([
-      ["1", { id: "1", name: "Whiskers", age: 2 }],
-      ["2", { id: "2", name: "Felix", age: 3 }],
-    ]),
-    getCats: Effect.sync(function* (this: { cats: Map<string, Cat> }) {
-      return Array.from(this.cats.values());
-    }),
-    getCatById: (id: string) =>
-      Effect.sync(function* (this: { cats: Map<string, Cat> }) {
-        const cat = this.cats.get(id);
-        if (!cat) {
-          return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-        }
-        return cat;
-      }),
-    createCat: (catData: CreateCat) =>
-      Effect.sync(function* (this: { cats: Map<string, Cat> }) {
-        const newId = String(this.cats.size + 1);
-        const newCat: Cat = { ...catData, id: newId };
-        this.cats.set(newId, newCat);
-        return newCat;
-      }),
-    updateCat: (id: string, catData: UpdateCat) =>
-      Effect.sync(function* (this: { cats: Map<string, Cat> }) {
-        const existingCat = this.cats.get(id);
-        if (!existingCat) {
-          return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-        }
-        const updatedCat = { ...existingCat, ...catData };
-        this.cats.set(id, updatedCat);
-        return updatedCat;
-      }),
-    deleteCat: (id: string) =>
-      Effect.sync(function* (this: { cats: Map<string, Cat> }) {
-        if (!this.cats.delete(id)) {
-          return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-        }
-        return { message: `Cat ${id} deleted` };
-      }),
-  })
-);
-
-
-const catRoutes = Router.empty.pipe(
-    ["2", { id: "2", name: "Felix", age: 3 }],
-  ]),
-  getCats: Effect.sync(function*() {
-    // `this` refers to InMemoryCatsServiceLive.cats
-    // type casting to any to avoid type errors with `this`
-    return Array.from((this as any).cats.values());
-  }),
-  getCatById: (id: string) => Effect.sync(function*() {
-    const cat = (this as any).cats.get(id);
-    if (!cat) {
-      return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-    }
-    return cat;
-  }),
-  createCat: (catData: CreateCat) => Effect.sync(function*() {
-    const newId = String((this as any).cats.size + 1);
-    const newCat: Cat = { ...catData, id: newId };
-    (this as any).cats.set(newId, newCat);
-    return newCat;
-  }),
-  updateCat: (id: string, catData: UpdateCat) => Effect.sync(function*() {
-    const existingCat = (this as any).cats.get(id);
-    if (!existingCat) {
-      return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-    }
-    const updatedCat = { ...existingCat, ...catData };
-    (this as any).cats.set(id, updatedCat);
-    return updatedCat;
-  }),
-  deleteCat: (id: string) => Effect.sync(function*() {
-    if (!(this as any).cats.delete(id)) {
-        return yield* Effect.fail(HttpError.notFound(`Cat with id ${id} not found`));
-    }
-    return { message: `Cat ${id} deleted` };
-  }),
-});
-
+// For PUT requests: Partial of CreateCatRequestSchema, id comes from path.
+const UpdateCatRequestSchema = Schema.partial(CreateCatRequestSchema);
 
 const catRoutes = Router.empty.pipe(
   Router.get(
     "/cats",
     Effect.gen(function*(_) {
-      const service = yield* _(CatsService);
-      const cats = yield* _(service.getCats);
-      return yield* _(HttpServer.response.schemaJson(Schema.array(CatSchema))(cats));
-    }).pipe(Effect.catchAll((e) => HttpServer.response.text(e.message, { status: 500 })))
+      const service = yield* _(Cats);
+      const cats = yield* _(service.findAll());
+      return yield* _(HttpServer.response.schemaJson(Schema.array(Cat))(cats));
+    }).pipe(
+      Effect.catchAll((e) => HttpServer.response.text(Equivalence.equals(e, {}) && e instanceof Error ? e.message : "Unknown error", { status: 500 }))
+    )
   ),
   Router.get(
     "/cats/:id",
     Effect.gen(function*(_) {
       const req = yield* _(HttpServer.request.ServerRequest);
-      const service = yield* _(CatsService);
-      const cat = yield* _(service.getCatById(req.params.id));
-      return yield* _(HttpServer.response.schemaJson(CatSchema)(cat));
+      const service = yield* _(Cats);
+      const cat = yield* _(service.findById(req.params.id as CatId));
+      return yield* _(HttpServer.response.schemaJson(Cat)(cat));
     }).pipe(
-        Effect.catchTag("NotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
-        Effect.catchAll((e) => HttpServer.response.text(e.message, { status: 500 }))
+      Effect.catchTag("CatNotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
+      Effect.catchAll((e) => HttpServer.response.text(Equivalence.equals(e, {}) && e instanceof Error ? e.message : "Unknown error", { status: 500 }))
     )
   ),
   Router.post(
     "/cats",
     Effect.gen(function*(_) {
       const req = yield* _(HttpServer.request.ServerRequest);
-      const service = yield* _(CatsService);
-      const catData = yield* _(HttpServer.request.schemaBodyJson(CreateCatSchema)(req));
-      const newCat = yield* _(service.createCat(catData));
-      return yield* _(HttpServer.response.schemaJson(CatSchema)(newCat, { status: 201 }));
+      const service = yield* _(Cats);
+      const catData = yield* _(HttpServer.request.schemaBodyJson(CreateCatRequestSchema)(req));
+
+      // Generate ID for the new cat
+      const newCatId = uuidv4() as CatId;
+      const newCat = new Cat({ ...catData, id: newCatId }); // Use the Cat class constructor
+
+      yield* _(service.persist(newCat)); // Persist returns string message, not the cat object
+      // Return the created cat object as per typical API behavior
+      return yield* _(HttpServer.response.schemaJson(Cat)(newCat, { status: 201 }));
     }).pipe(
-        Effect.catchTag("ParseError", (e) => HttpServer.response.text(e.message, { status: 400 })),
-        Effect.catchAll((e) => HttpServer.response.text(e.message, { status: 500 }))
+      Effect.catchTag("ParseError", (e) => HttpServer.response.text(e.message, { status: 400 })),
+      Effect.catchAll((e) => HttpServer.response.text(Equivalence.equals(e, {}) && e instanceof Error ? e.message : "Unknown error", { status: 500 }))
     )
   ),
   Router.put(
     "/cats/:id",
     Effect.gen(function*(_) {
       const req = yield* _(HttpServer.request.ServerRequest);
-      const service = yield* _(CatsService);
-      const catData = yield* _(HttpServer.request.schemaBodyJson(UpdateCatSchema)(req));
-      const updatedCat = yield* _(service.updateCat(req.params.id, catData));
-      return yield* _(HttpServer.response.schemaJson(CatSchema)(updatedCat));
+      const service = yield* _(Cats);
+      const catUpdateData = yield* _(HttpServer.request.schemaBodyJson(UpdateCatRequestSchema)(req));
+      const catId = req.params.id as CatId;
+
+      // Fetch existing cat
+      const existingCat = yield* _(service.findById(catId));
+
+      // Apply updates. Ensure all required fields of Cat are present.
+      // Spread existingCat first, then catUpdateData to update fields.
+      // If catUpdateData can remove fields (e.g. by providing undefined), ensure this is handled.
+      // The Cat class constructor or a dedicated update method would be safer here.
+      const updatedCatPayload = {
+        ...existingCat, // Spread existing cat properties
+        ...catUpdateData, // Override with updated properties
+        id: catId // Ensure ID remains the same
+      };
+       // Re-construct to ensure it's a valid Cat instance, especially if there are class methods or validations.
+      const updatedCat = new Cat(updatedCatPayload);
+
+
+      yield* _(service.persist(updatedCat)); // Persist the updated cat
+      return yield* _(HttpServer.response.schemaJson(Cat)(updatedCat));
     }).pipe(
-        Effect.catchTag("ParseError", (e) => HttpServer.response.text(e.message, { status: 400 })),
-        Effect.catchTag("NotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
-        Effect.catchAll((e) => HttpServer.response.text(e.message, { status: 500 }))
+      Effect.catchTag("ParseError", (e) => HttpServer.response.text(e.message, { status: 400 })),
+      Effect.catchTag("CatNotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
+      Effect.catchAll((e) => HttpServer.response.text(Equivalence.equals(e, {}) && e instanceof Error ? e.message : "Unknown error", { status: 500 }))
     )
   ),
   Router.delete(
     "/cats/:id",
     Effect.gen(function*(_) {
       const req = yield* _(HttpServer.request.ServerRequest);
-      const service = yield* _(CatsService);
-      const result = yield* _(service.deleteCat(req.params.id));
-      return yield* _(HttpServer.response.schemaJson(Schema.struct({ message: Schema.string }))(result));
+      const service = yield* _(Cats);
+      yield* _(service.removeById(req.params.id as CatId));
+      return yield* _(HttpServer.response.json({ message: `Cat ${req.params.id} deleted` }, { status: 200 })); // 200 or 204
     }).pipe(
-        Effect.catchTag("NotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
-        Effect.catchAll((e) => HttpServer.response.text(e.message, { status: 500 }))
+      Effect.catchTag("CatNotFoundError", (e) => HttpServer.response.text(e.message, { status: 404 })),
+      Effect.catchAll((e) => HttpServer.response.text(Equivalence.equals(e, {}) && e instanceof Error ? e.message : "Unknown error", { status: 500 }))
     )
   )
 );

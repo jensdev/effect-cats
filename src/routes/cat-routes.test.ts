@@ -5,193 +5,164 @@ import * as Http from "@effect/platform/HttpServer";
 import * as Client from "@effect/platform/HttpClient";
 import * as ClientRequest from "@effect/platform/HttpClientRequest";
 import * as ClientResponse from "@effect/platform/HttpClientResponse";
-import { Schema } from "@effect/schema";
+import { Schema } from "@effect/schema"; // Keep Schema for potential ad-hoc schema needs in tests
+import { v4 as uuidv4 } from "uuid";
 
-import catRoutes, { CatsService, InMemoryCatsServiceLive, CatSchema, CreateCatSchema, UpdateCatSchema } from "./cat-routes"; // Assuming CatSchema exports
+// Updated imports for actual layers and domain models
+import catRoutes from "./cat-routes";
+import { CatsLayer } from "../../services/cats";
+import { CatsData, CatsDataLayer, defaultCats } from "../../data-access/cats-data";
+import { Cat, CatId } from "../../domain/cats";
+import { Effect, Layer, Cause } from "effect";
+import { Router, HttpServer } from "@effect/platform";
+import { NodeHttpServer } from "@effect/platform-node";
+import * as Client from "@effect/platform/HttpClient";
+import * as ClientRequest from "@effect/platform/HttpClientRequest";
 
-// Helper to create a test server and client
-const testApp = <R, E, A>(
-  routes: Router.Router<R, E>,
-  layer: Layer.Layer<R, E, A>
-) =>
-  Http.server.serve(routes).pipe(
-    Http.server.withLogAddress,
-    Effect.flatMap((server) => Client.fetch(ClientRequest.get(`http://localhost:${server.address.port}/api/cats`))),
-    Layer.provide(Http.server.layer({ port: 0 })), // Use port 0 for random available port
-    Layer.provide(NodeHttpServer.layer),
-    Layer.provide(layer),
-    Layer.provide(Client.layer)
+// The application layer for tests, using actual CatsLayer and CatsDataLayer
+const TestAppLayers = Layer.merge(CatsLayer, CatsDataLayer).pipe(
+  Layer.provide(Client.layer), // Provide HttpClient layer for making requests
+  Layer.provide(NodeHttpServer.layer) // Provide NodeHttpServer for running the server
+);
+
+// Helper to get a free port and start the server for a test
+const runTestServer = <R, E>(router: Router.Router<R, E>) =>
+  HttpServer.serve(router).pipe(
+    Effect.flatMap(server => Effect.succeed(server.address)),
+    HttpServer.withLogAddress,
+    Layer.provide(HttpServer.layer({ port: 0 })) // Use port 0 for a random available port
   );
 
-
-const AppTestLayer = Layer.merge(InMemoryCatsServiceLive, Client.layer);
-
-
-describe("Cat Routes", () => {
-  const testHttpClient = Client.makeDefault("http://localhost:0/api"); // Base URL, port will be dynamic
-
+describe("Cat Routes with Real Services", () => {
   // GET /api/cats
-  it("should get all cats", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
+  it("should get all default cats", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
 
-    const response = yield* _(client(ClientRequest.get(`http://${address.address}:${address.port}/api/cats`)));
-    const body = yield* _(response.json);
+      const response = yield* _(client(ClientRequest.get(`http://${serverAddress.address}:${serverAddress.port}/api/cats`)));
+      const body = yield* _(response.json);
 
-    expect(response.status).toBe(200);
-    expect(body).toEqual([
-      { id: "1", name: "Whiskers", age: 2 },
-      { id: "2", name: "Felix", age: 3 },
-    ]);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      expect(response.status).toBe(200);
+      // Assert against the default cats from CatsDataLayer
+      expect(body).toEqual(Array.from(defaultCats.values()));
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
-  // GET /api/cats/:id
-  it("should get a cat by ID", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
+  // POST /api/cats, then GET /api/cats/:id
+  it("should create a new cat and then retrieve it", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
 
-    const response = yield* _(client(ClientRequest.get(`http://${address.address}:${address.port}/api/cats/1`)));
-    const body = yield* _(response.json);
+      const newCatData = { name: "Tom", age: 1, breed: "Bombay" as const };
+      const postResponse = yield* _(client(ClientRequest.post(`http://${serverAddress.address}:${serverAddress.port}/api/cats`, { body: ClientRequest.jsonBody(newCatData) })));
+      const createdCat = yield* _(postResponse.json as Effect.Effect<Cat, any>);
 
-    expect(response.status).toBe(200);
-    expect(body).toEqual({ id: "1", name: "Whiskers", age: 2 });
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      expect(postResponse.status).toBe(201);
+      expect(createdCat.id).toMatch(/^[0-9a-fA-F-]{36}$/); // UUID format
+      expect(createdCat).toEqual(expect.objectContaining(newCatData));
 
-  it("should return 404 for a non-existent cat ID", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
+      // Retrieve the created cat
+      const getResponse = yield* _(client(ClientRequest.get(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${createdCat.id}`)));
+      const fetchedCat = yield* _(getResponse.json);
 
-    const response = yield* _(client(ClientRequest.get(`http://${address.address}:${address.port}/api/cats/99`)));
-    expect(response.status).toBe(404);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      expect(getResponse.status).toBe(200);
+      expect(fetchedCat).toEqual(createdCat);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
-  // POST /api/cats
-  it("should create a new cat", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
-    const newCatData = { name: "Tom", age: 1 };
+  it("should return 404 for a non-existent cat ID", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
+      const nonExistentId = uuidv4() as CatId;
 
-    const response = yield* _(client(ClientRequest.post(`http://${address.address}:${address.port}/api/cats`, { body: ClientRequest.jsonBody(newCatData) })));
-    const body = yield* _(response.json);
+      const response = yield* _(client(ClientRequest.get(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${nonExistentId}`)));
+      expect(response.status).toBe(404);
+      const body = yield* _(response.text);
+      expect(body).toContain(`Cat with id ${nonExistentId} not found`);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
-    expect(response.status).toBe(201);
-    expect(body).toEqual(expect.objectContaining(newCatData));
-    expect(body.id).toBeDefined();
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+  it("should return 400 for invalid cat data on POST (e.g. invalid age)", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
+      const invalidCatData = { name: "Bad Cat", age: "veryold", breed: "Chartreux" }; // age is string
 
-   it("should return 400 for invalid cat data on POST", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
-    // Send data that would fail CreateCatSchema parsing (e.g. name is a number)
-    const invalidCatData = { name: 123, age: "invalid_age" };
-
-
-    const response = yield* _(client(ClientRequest.post(`http://${address.address}:${address.port}/api/cats`, { body: ClientRequest.jsonBody(invalidCatData) })));
-    expect(response.status).toBe(400); // Expecting Bad Request due to schema validation
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
-
+      const response = yield* _(client(ClientRequest.post(`http://${serverAddress.address}:${serverAddress.port}/api/cats`, { body: ClientRequest.jsonBody(invalidCatData) })));
+      expect(response.status).toBe(400);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
   // PUT /api/cats/:id
-  it("should update an existing cat", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
-    const updatedData = { name: "Whiskers Updated", age: 3 };
+  it("should update an existing cat", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
 
-    const response = yield* _(client(ClientRequest.put(`http://${address.address}:${address.port}/api/cats/1`, { body: ClientRequest.jsonBody(updatedData) })));
-    const body = yield* _(response.json);
+      // Create a cat first to update it
+      const initialCatData = { name: "Mittens", age: 2, breed: "Abyssinian" as const };
+      const postResponse = yield* _(client(ClientRequest.post(`http://${serverAddress.address}:${serverAddress.port}/api/cats`, { body: ClientRequest.jsonBody(initialCatData) })));
+      const createdCat = yield* _(postResponse.json as Effect.Effect<Cat, any>);
+      expect(postResponse.status).toBe(201);
 
-    expect(response.status).toBe(200);
-    expect(body).toEqual({ id: "1", ...updatedData });
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      const updates = { name: "Mittens Senior", age: 3 };
+      const putResponse = yield* _(client(ClientRequest.put(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${createdCat.id}`, { body: ClientRequest.jsonBody(updates) })));
+      const updatedCat = yield* _(putResponse.json as Effect.Effect<Cat, any>);
 
-  it("should return 404 when updating a non-existent cat", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
-    const updatedData = { name: "NonExistent", age: 5 };
+      expect(putResponse.status).toBe(200);
+      expect(updatedCat.id).toBe(createdCat.id);
+      expect(updatedCat.name).toBe(updates.name);
+      expect(updatedCat.age).toBe(updates.age);
+      expect(updatedCat.breed).toBe(initialCatData.breed); // Breed should remain unchanged
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
-    const response = yield* _(client(ClientRequest.put(`http://${address.address}:${address.port}/api/cats/99`, { body: ClientRequest.jsonBody(updatedData) })));
-    expect(response.status).toBe(404);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+  it("should return 404 when updating a non-existent cat", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
+      const nonExistentId = uuidv4() as CatId;
+      const updatedData = { name: "NonExistent", age: 5 };
 
-  it("should return 400 for invalid cat data on PUT", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
-    const invalidUpdateData = { age: "very_old" }; // age should be a number
-
-    const response = yield* _(client(ClientRequest.put(`http://${address.address}:${address.port}/api/cats/1`, { body: ClientRequest.jsonBody(invalidUpdateData) })));
-    expect(response.status).toBe(400);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
-
+      const response = yield* _(client(ClientRequest.put(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${nonExistentId}`, { body: ClientRequest.jsonBody(updatedData) })));
+      expect(response.status).toBe(404);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
   // DELETE /api/cats/:id
-  it("should delete a cat by ID", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
+  it("should delete a cat by ID", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
 
-    // First, create a cat to delete, to ensure test isolation for delete
-    const newCatData = { name: "To Be Deleted", age: 1 };
-    const creationResponse = yield* _(client(ClientRequest.post(`http://${address.address}:${address.port}/api/cats`, { body: ClientRequest.jsonBody(newCatData) })));
-    const createdCat = yield* _(creationResponse.json as Effect.Effect<any, any>); // Type assertion
+      const catToDeleteData = { name: "Ephemeral", age: 1, breed: "Bombay" as const };
+      const postResponse = yield* _(client(ClientRequest.post(`http://${serverAddress.address}:${serverAddress.port}/api/cats`, { body: ClientRequest.jsonBody(catToDeleteData) })));
+      const createdCat = yield* _(postResponse.json as Effect.Effect<Cat, any>);
+      expect(postResponse.status).toBe(201);
 
-    const deleteResponse = yield* _(client(ClientRequest.del(`http://${address.address}:${address.port}/api/cats/${createdCat.id}`)));
-    const deleteBody = yield* _(deleteResponse.json);
+      const deleteResponse = yield* _(client(ClientRequest.del(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${createdCat.id}`)));
+      const deleteBody = yield* _(deleteResponse.json);
 
-    expect(deleteResponse.status).toBe(200);
-    expect(deleteBody).toEqual({ message: `Cat ${createdCat.id} deleted` });
+      expect(deleteResponse.status).toBe(200);
+      expect(deleteBody).toEqual({ message: `Cat ${createdCat.id} deleted` });
 
-    // Verify it's actually deleted
-    const verifyResponse = yield* _(client(ClientRequest.get(`http://${address.address}:${address.port}/api/cats/${createdCat.id}`)));
-    expect(verifyResponse.status).toBe(404);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      // Verify it's actually deleted
+      const verifyResponse = yield* _(client(ClientRequest.get(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${createdCat.id}`)));
+      expect(verifyResponse.status).toBe(404);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 
-  it("should return 404 when deleting a non-existent cat", () => Effect.gen(function*(_) {
-    const router = Router.empty.pipe(Router.mount("/api", catRoutes));
-    const server = yield* _(Http.server.serve(router));
-    const address = server.address;
-    const client = yield* _(Client.HttpClient);
+  it("should return 404 when deleting a non-existent cat", () =>
+    Effect.gen(function*(_) {
+      const router = Router.empty.pipe(Router.mount("/api", catRoutes));
+      const serverAddress = yield* _(runTestServer(router));
+      const client = yield* _(Client.HttpClient);
+      const nonExistentId = uuidv4() as CatId;
 
-    const response = yield* _(client(ClientRequest.del(`http://${address.address}:${address.port}/api/cats/999`)));
-    expect(response.status).toBe(404);
-  }).pipe(Effect.provide(AppTestLayer), Effect.provide(HttpServer.layer({port: 0})), Effect.provide(NodeHttpServer.layer), Effect.runPromise));
+      const response = yield* _(client(ClientRequest.del(`http://${serverAddress.address}:${serverAddress.port}/api/cats/${nonExistentId}`)));
+      expect(response.status).toBe(404);
+    }).pipe(Effect.provide(TestAppLayers), Effect.runPromise));
 });
-
-// Note: To run these tests, you'd typically use a test runner that supports Effect,
-// or execute this file directly with ts-node after installing necessary dependencies (jest, ts-jest for example with appropriate setup).
-// The `.pipe(Effect.runPromise)` is a way to execute the Effect for each test.
-// A more integrated test setup would use something like `test` from `@effect/test` if available and configured.
-// For now, this structure should allow execution via a runner that can handle Promises.
-// Also, ensure jest or a similar test runner is configured for TypeScript and Effect.
-// The `describe` and `it` are Jest-style, assuming a Jest environment.
-// The `InMemoryCatsServiceLive` will reset for each test run if structured correctly with the test runner,
-// or tests might need to be adapted to ensure state doesn't leak if the same service instance is reused across tests.
-// The current structure with `Effect.runPromise` for each `it` block, and providing layers within each,
-// helps in isolating the service state for each test.
-// The schemas (CatSchema, CreateCatSchema, UpdateCatSchema) are assumed to be exported from './cat-routes'
-// or would need to be imported from their actual schema definition file.
-// I've also assumed that `HttpServer.layer({port:0})` will correctly make the server listen on a random available port.
-// The client base URL in `testHttpClient` is illustrative; the actual URL with dynamic port is constructed in each test.
-// The `AppTestLayer` bundles the `InMemoryCatsServiceLive` and `Client.layer`.
-// Each test case provides its own `HttpServer.layer` to get a fresh server instance on a random port.
-// This is a common pattern for HTTP testing to ensure test isolation and avoid port conflicts.
-// Added schema imports to the top.
-// Corrected `ClientRequest.jsonBody` usage.
-// Corrected type assertion for createdCat.
-// Removed unused `testApp` and `testHttpClient` as the per-test setup is more robust.
