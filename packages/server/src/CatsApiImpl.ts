@@ -1,20 +1,20 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { CatsApi } from "@effect-cats/domain";
-import { Effect, Layer } from "effect";
-import { CatsRepository } from "./CatsRepository.js";
+import { Effect } from "effect"; // Layer is not needed here anymore
+import { CatsService } from "./CatsService.js"; // Import CatsService
 
 export const CatsApiLive = HttpApiBuilder.group(CatsApi, "cats", (handlers) =>
   Effect.gen(function* (_) {
-    const catsRepo = yield* CatsRepository;
+    const catsService = yield* _(CatsService); // Use CatsService
     return handlers
-      .handle("getAllCats", () => catsRepo.getAll)
-      .handle("getCatById", ({ path: { id } }) => catsRepo.getById(id))
+      .handle("getAllCats", () => catsService.getAllCats) // Use CatsService method
+      .handle("getCatById", ({ path: { id } }) => catsService.getCatById(id)) // Use CatsService method
       .handle("createCat", ({ payload: { name, breed, age } }) =>
-        catsRepo.create(name, breed, age),
+        catsService.createCat(name, breed, age), // Use CatsService method
       )
       .handle("updateCat", ({ path: { id }, payload }) =>
-        catsRepo.update(id, payload),
+        catsService.updateCat(id, payload), // Use CatsService method
       )
-      .handle("deleteCat", ({ path: { id } }) => catsRepo.remove(id));
+      .handle("deleteCat", ({ path: { id } }) => catsService.deleteCat(id)); // Use CatsService method
   }),
 );
