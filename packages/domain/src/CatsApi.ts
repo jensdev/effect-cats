@@ -37,9 +37,9 @@ export class CatsApiGroup extends HttpApiGroup.make("cats")
       .setPath(Schema.Struct({ id: CatIdFromString }))
       .setPayload(
         Schema.Struct({
-          name: Schema.OptionFromNullOr(Schema.NonEmptyTrimmedString),
-          breed: Schema.OptionFromNullOr(Schema.NonEmptyTrimmedString),
-          age: Schema.OptionFromNullOr(Schema.Number),
+          name: Schema.NonEmptyTrimmedString,
+          breed: Schema.NonEmptyTrimmedString,
+          age: Schema.Number,
         }),
       ),
   )

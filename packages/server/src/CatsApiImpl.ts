@@ -1,11 +1,11 @@
 import { HttpApiBuilder } from "@effect/platform";
-import { CatsApi } from "@effect-cats/domain/CatsApi";
+import { CatsApi } from "@effect-cats/domain";
 import { Effect, Layer } from "effect";
 import { CatsRepository } from "./CatsRepository.js";
 
 export const CatsApiLive = HttpApiBuilder.group(CatsApi, "cats", (handlers) =>
   Effect.gen(function* (_) {
-    const catsRepo = yield* _(CatsRepository);
+    const catsRepo = yield* CatsRepository;
     return handlers
       .handle("getAllCats", () => catsRepo.getAll)
       .handle("getCatById", ({ path: { id } }) => catsRepo.getById(id))

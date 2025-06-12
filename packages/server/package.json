@@ -17,7 +17,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@effect-cats/domain": "0.1.0",
+    "@effect-cats/domain": "*",
     "@effect/platform": "^0.84.9",
     "@effect/platform-node": "^0.85.14",
     "effect": "^3.16.5"
