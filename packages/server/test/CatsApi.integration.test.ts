@@ -1,7 +1,8 @@
 import { HttpApi, HttpApp, HttpRouter, HttpServerRequest, HttpTesting } from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import { Schema } from "@effect/schema";
-import { Cat, CatId, CatsApi } from "@template/domain/CatsApi";
+import { Cat, CatId } from "@template/domain/cats.js";
+import { CatsApi } from "@template/domain/CatsApi.js";
 import { Effect, Layer, ReadonlyArray } from "effect";
 import { describe, it, expect } from "vitest"; // Assuming vitest
 import { ApiLive } from "../src/Api.js"; // Main API layer

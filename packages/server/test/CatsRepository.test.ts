@@ -1,5 +1,6 @@
 import { Effect, Layer, Option, ReadonlyArray } from "effect";
-import { Cat, CatId, CatNotFound } from "@template/domain/CatsApi";
+import { Cat, CatId } from "@template/domain/cats.js";
+import { CatNotFound } from "@template/domain/CatsApi.js";
 import { CatsRepository, CatsRepositoryLive } from "../src/CatsRepository.js"; // Adjust path as needed
 import { describe, it, expect } from "vitest"; // Assuming vitest is the test runner
 

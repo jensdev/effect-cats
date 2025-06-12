@@ -1,4 +1,5 @@
-import { Cat, CatId, CatNotFound } from "@template/domain/CatsApi";
+import { Cat, CatId } from "@template/domain/cats.js";
+import { CatNotFound } from "@template/domain/CatsApi.js";
 import { Context, Data, Effect, Layer, Option, ReadonlyArray } from "effect";
 
 // Define the interface for our repository
