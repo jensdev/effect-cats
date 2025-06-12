@@ -8,20 +8,19 @@ export const CatIdFromString = Schema.NumberFromString.pipe(
 );
 
 export class Cat extends Schema.Class<Cat>("Cat")({
-  id: CatId.pipe(
-    Schema.description("The unique identifier for the cat."),
-    Schema.examples([123]),
-  ),
-  name: Schema.NonEmptyTrimmedString.pipe(
-    Schema.description("The name of the cat."),
-    Schema.examples(["Whiskers"]),
-  ),
-  breed: Schema.NonEmptyTrimmedString.pipe(
-    Schema.description("The breed of the cat."),
-    Schema.examples(["Siamese"]),
-  ),
-  age: Schema.Number.pipe(
-    Schema.description("The age of the cat in years."),
-    Schema.examples([2]),
-  ),
+  id: CatId.annotations({
+    description: "The name of the cat",
+  }),
+  name: Schema.NonEmptyTrimmedString.annotations({
+    description: "The name of the cat",
+    examples: ["Fluffy", "Whiskers", "Mittens"],
+  }),
+  breed: Schema.NonEmptyTrimmedString.annotations({
+    description: "The breed of the cat.",
+    examples: ["Siamese", "Whiskers", "Mittens"],
+  }),
+  age: Schema.Number.annotations({
+    description: "The name of the cat",
+    examples: [2, 5],
+  }),
 }) {}
