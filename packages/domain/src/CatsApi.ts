@@ -1,6 +1,6 @@
 import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
-import { Cat, CatIdFromString } from "./Cats.js"; // Import Cat and CatIdFromString
+import { Cat, CatIdFromString } from "./Cats.ts"; // Import Cat and CatIdFromString
 
 // CatId and Cat class are now imported from ./cats.ts
 
@@ -22,14 +22,16 @@ export class CatsApiGroup extends HttpApiGroup.make("cats")
   .add(
     HttpApiEndpoint.post("createCat", "/cats")
       .addSuccess(Cat)
-      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit(["id"]))),
+      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit("id"))),
   )
   .add(
     HttpApiEndpoint.patch("updateCat", "/cats/:id")
       .addSuccess(Cat)
       .addError(CatNotFound, { status: 404 })
       .setPath(Schema.Struct({ id: CatIdFromString }))
-      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit(["id"]), Schema.Partial)),
+      .setPayload(
+        Schema.Struct(Cat.fields).pipe(Schema.omit("id"), Schema.partial),
+      ),
   )
   .add(
     HttpApiEndpoint.del("deleteCat", "/cats/:id")

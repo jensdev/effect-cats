@@ -1,2 +1,2 @@
-export * from "./Cats";
-export * from "./CatsApi";
+export * from "./Cats.ts";
+export * from "./CatsApi.ts";
