@@ -6,26 +6,41 @@ A project demonstrating a CRUD API for managing cat information, built with Type
 
 *   TypeScript
 *   Effect-TS
-*   Node.js
-*   NPM Workspaces
-*   Turbo (for monorepo build orchestration)
-*   Biome (for linting and formatting)
+*   Deno (replacing Node.js, NPM Workspaces, and Turbo)
+    *   Utilizes Deno's built-in tools, including its task runner (`deno task`), formatter (`deno fmt`), and linter (`deno lint`).
 
 ## Project Structure
 
 *   `packages/domain`: Contains the core business logic, schemas (like `Cat`, `CatId`), and API definitions (`CatsApi`).
 *   `packages/server`: Implements the API defined in the `domain` package, including services, repositories, and the main server setup.
+*   `deno.json`: The configuration file for Deno, specifying project settings, dependencies, and tasks.
+*   `deno.lock`: The lock file that ensures deterministic builds by pinning dependency versions.
+
+## Deno Specifics
+
+This project leverages several key features of the Deno runtime:
+
+*   **Module System**: Deno uses ES modules and imports modules directly via URLs (e.g., from `https://deno.land/std` or `npm:` specifiers) or local paths.
+    *   **Import Maps**: The `deno.json` file can contain an `imports` field, which serves as an import map. This allows for aliasing module URLs to shorter, more manageable names, similar to how `package.json` manages dependencies in Node.js projects.
+    *   **Local Caching**: Imported modules are downloaded and cached locally on your machine. Subsequent runs will use the cached version unless explicitly told otherwise (e.g., with the `--reload` flag). This ensures that once downloaded, dependencies are available offline and builds are faster. The `deno cache <entry-point.ts>` command can be used to pre-cache dependencies.
+*   **Security**: Deno executes code in a sandbox by default. This means scripts do not have access to the file system, network, or environment variables unless explicitly granted via command-line flags (e.g., `deno run --allow-net --allow-read main.ts`). This provides a more secure environment for running code.
+*   **Built-in Tooling**: Deno comes with a comprehensive set of built-in tools, including:
+    *   A task runner (`deno task`) for executing scripts defined in `deno.json`.
+    *   A dependency inspector (`deno info`).
+    *   A code formatter (`deno fmt`).
+    *   A code linter (`deno lint`).
+    *   A test runner (`deno test`).
 
 ## Available Scripts
 
-The following scripts are available from the root `package.json`:
+The following scripts are available and can be run using `deno task <task-name>` for tasks defined in `deno.json`, or using built-in Deno commands:
 
-*   `npm run build`: Builds both `domain` and `server` packages.
-*   `npm run dev`: Runs both `domain` and `server` in development mode.
-*   `npm run lint`: Lints the codebase using Biome.
-*   `npm run test`: Runs tests. (Note: `packages/domain/package.json` currently shows "Error: no test specified". This script might not execute tests for the domain package until tests are added.)
-*   `npm run format`: Formats the codebase using Biome.
-*   `npm run clean`: Removes build artifacts (`dist` folders, `node_modules`, `.turbo`).
+*   **Build**: Deno can create executables using `deno compile <your-main-script.ts>`. For more complex build processes (e.g., building multiple packages), custom tasks can be defined in `deno.json`.
+*   `deno task dev`: Runs the main application (likely the server) in development mode with file watching, as defined in the root `deno.json`.
+*   `deno lint`: Lints the codebase using Deno's built-in linter (`deno lint`).
+*   `deno test`: Runs tests using Deno's built-in test runner.
+*   `deno fmt`: Formats the codebase using Deno's built-in formatter (`deno fmt`).
+*   **Clean**: A `clean` task can be added to `deno.json` to remove build artifacts (e.g., `dist` folders, `deno.lock`, `nodeModulesDir` if applicable).
 
 ## API Endpoints
 
@@ -46,12 +61,11 @@ The following API endpoints are available:
     ```bash
     git clone <repository-url>
     ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
+2.  **Set up Deno**:
+    *   Ensure Deno is installed on your system. Visit the [official Deno website](https://deno.land/) for installation instructions.
+    *   Deno manages dependencies through direct URL imports in source code. These are cached locally. You can pre-cache dependencies by running `deno cache main.ts` (or the primary entry point script, e.g., `packages/server/src/main.ts` if running from the server package directly). The `deno.json` file may specify an `imports` map for easier dependency management.
 3.  Run the development server:
     ```bash
-    npm run dev
+    deno task dev
     ```
 4.  The server will be available at `http://localhost:3000`.
