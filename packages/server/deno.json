@@ -1,6 +1,6 @@
 {
 	"tasks": {
-		"dev": "deno run --watch src/main.ts"
+		"dev": "deno run -REN --allow-ffi --watch src/main.ts"
 	},
 	"imports": {
 		"@effect/platform": "npm:@effect/platform@^0.84.11",
