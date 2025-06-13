@@ -1,5 +1,5 @@
 import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
-import { Array, Context, Data, Effect, Layer, Option } from "effect";
+import { Array, Context, Effect, Layer, Option } from "effect";
 
 // Create a context tag for the repository
 export class CatsRepository extends Context.Tag("Cats/Repository")<
@@ -51,12 +51,9 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
         return updatedCat;
       }),
     remove: (id: CatId) =>
-      Effect.sync(() => {
-        if (catsStore.has(id)) {
-          catsStore.delete(id);
-          return Effect.void;
-        }
-        return Effect.fail(new CatNotFound({ id }));
-      }).pipe(Effect.flatten),
+      Effect.if(catsStore.has(id), {
+        onTrue: () => Effect.sync(() => void catsStore.delete(id)),
+        onFalse: () => Effect.fail(new CatNotFound({ id })),
+      }),
   };
 });
