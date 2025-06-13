@@ -19,8 +19,12 @@ export class Cat extends Schema.Class<Cat>("Cat")({
     description: "The breed of the cat.",
     examples: ["Siamese", "Whiskers", "Mittens"],
   }),
-  age: Schema.Number.annotations({
-    description: "The age of the cat",
-    examples: [2, 5],
-  }),
+  age: Schema.Number.pipe(
+    Schema.int(),
+    Schema.nonNegative(),
+    Schema.annotations({
+      description: "The age of the cat",
+      examples: [0, 2, 5],
+    }),
+  ),
 }) {}

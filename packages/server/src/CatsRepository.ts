@@ -28,10 +28,15 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
   const getNextId = (): CatId => CatId.make(nextId++);
 
   return {
-    getAll: Effect.sync(() => Array.fromIterable(catsStore.values())),
+    getAll: Effect.sync(() => Array.fromIterable(catsStore.values())).pipe(
+      Effect.withSpan("CatsRepository/getAll"),
+    ),
     getById: (id: CatId) =>
       Option.fromNullable(catsStore.get(id)).pipe(
         Effect.mapError(() => new CatNotFound({ id })),
+        Effect.withSpan("CatsRepository/getById", {
+          attributes: { "cat.id": id },
+        }),
       ),
     create: (name: string, breed: string, age: number) =>
       Effect.sync(() => {
@@ -39,7 +44,11 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
         const newCat = new Cat({ id, name, breed, age });
         catsStore.set(id, newCat);
         return newCat;
-      }),
+      }).pipe(
+        Effect.withSpan("CatsRepository/create", {
+          attributes: { "cat.name": name, "cat.breed": breed, "cat.age": age },
+        }),
+      ),
     update: (id: CatId, data: Partial<Omit<Cat, "id">>) =>
       Effect.gen(function* (_) {
         const cat = yield* _(
@@ -49,11 +58,19 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
         const updatedCat = new Cat({ ...cat, ...data, id: cat.id }); // Ensure id is not changed
         catsStore.set(id, updatedCat);
         return updatedCat;
-      }),
+      }).pipe(
+        Effect.withSpan("CatsRepository/update", {
+          attributes: { "cat.id": id },
+        }),
+      ),
     remove: (id: CatId) =>
       Effect.if(catsStore.has(id), {
         onTrue: () => Effect.sync(() => void catsStore.delete(id)),
         onFalse: () => Effect.fail(new CatNotFound({ id })),
-      }),
+      }).pipe(
+        Effect.withSpan("CatsRepository/remove", {
+          attributes: { "cat.id": id },
+        }),
+      ),
   };
 });
