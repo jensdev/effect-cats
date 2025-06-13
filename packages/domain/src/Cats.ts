@@ -9,7 +9,7 @@ export const CatIdFromString = Schema.NumberFromString.pipe(
 
 export class Cat extends Schema.Class<Cat>("Cat")({
   id: CatId.annotations({
-    description: "The name of the cat",
+    description: "The ID of the cat",
   }),
   name: Schema.NonEmptyTrimmedString.annotations({
     description: "The name of the cat",
@@ -20,7 +20,7 @@ export class Cat extends Schema.Class<Cat>("Cat")({
     examples: ["Siamese", "Whiskers", "Mittens"],
   }),
   age: Schema.Number.annotations({
-    description: "The name of the cat",
+    description: "The age of the cat",
     examples: [2, 5],
   }),
 }) {}

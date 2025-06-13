@@ -1,6 +1,6 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { CatsApi } from "@effect-cats/domain";
-import { Effect } from "effect"; // Layer is not needed here anymore
+import { Effect } from "effect";
 import { CatsService } from "./CatsService.js"; // Import CatsService
 
 export const CatsApiLive = HttpApiBuilder.group(CatsApi, "cats", (handlers) =>
