@@ -22,26 +22,14 @@ export class CatsApiGroup extends HttpApiGroup.make("cats")
   .add(
     HttpApiEndpoint.post("createCat", "/cats")
       .addSuccess(Cat)
-      .setPayload(
-        Schema.Struct({
-          name: Schema.NonEmptyTrimmedString,
-          breed: Schema.NonEmptyTrimmedString,
-          age: Schema.Number,
-        }),
-      ),
+      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit(["id"]))),
   )
   .add(
     HttpApiEndpoint.patch("updateCat", "/cats/:id")
       .addSuccess(Cat)
       .addError(CatNotFound, { status: 404 })
       .setPath(Schema.Struct({ id: CatIdFromString }))
-      .setPayload(
-        Schema.Struct({
-          name: Schema.NonEmptyTrimmedString,
-          breed: Schema.NonEmptyTrimmedString,
-          age: Schema.Number,
-        }),
-      ),
+      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit(["id"]), Schema.Partial)),
   )
   .add(
     HttpApiEndpoint.del("deleteCat", "/cats/:id")
