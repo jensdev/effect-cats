@@ -5,10 +5,10 @@ import {
   HttpMiddleware,
 } from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
-import { Layer, Effect, Config } from "effect";
-import { ApiLive } from "./Api.js";
-import { CatsRepositoryLive } from "./CatsRepository.js";
-import { CatsServiceLive } from "./CatsService.js"; // Import CatsServiceLive
+import { Config, Effect, Layer } from "effect";
+import { ApiLive } from "./Api.ts";
+import { CatsRepositoryLive } from "./CatsRepository.ts";
+import { CatsServiceLive } from "./CatsService.ts"; // Import CatsServiceLive
 
 // Create a combined layer for the application services
 const AppLive = Layer.provide(CatsServiceLive, CatsRepositoryLive);

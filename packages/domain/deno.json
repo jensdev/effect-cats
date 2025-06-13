@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "dev": "deno run --watch src/main.ts"
+  },
+  "imports": {
+    "@effect/platform": "npm:@effect/platform@^0.84.11",
+    "@effect/platform-node": "npm:@effect/platform-node@^0.85.16",
+    "@std/assert": "jsr:@std/assert@1",
+    "effect": "npm:effect@^3.16.7"
+  },
+  "name": "@effect-cats/domain",
+  "exports": "./src/index.ts"
+}
