@@ -8,9 +8,10 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@effect/platform": "^0.53.0",
-    "@effect-cats/domain": "workspace:*",
-    "effect": "^3.0.0"
+    "@effect/platform": "^0.84.9",
+    "@effect/platform-node": "^0.85.14",
+    "@effect-cats/domain": "*",
+    "effect": "^3.16.5"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

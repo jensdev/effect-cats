@@ -12,10 +12,7 @@
     "composite": true,
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@effect-cats/domain": ["../domain/src"]
-    }
+    "baseUrl": "."
   },
   "include": ["src"]
 }
