@@ -13,7 +13,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules .turbo",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "cli": "npm start -w @effect-cats/cli --"
   },
   "keywords": [],
   "author": "",
@@ -25,10 +26,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@effect/experimental": "^0.48.10",
-    "@effect/platform": "^0.84.9",
-    "@effect/platform-node": "^0.85.14",
-    "@effect/schema": "^0.75.5",
-    "effect": "^3.16.5"
+    "@effect/experimental": "^0.48.11",
+    "@effect/platform": "^0.84.10",
+    "@effect/platform-node": "^0.85.15",
+    "effect": "^3.16.6"
   }
 }
