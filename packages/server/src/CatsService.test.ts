@@ -1,4 +1,4 @@
-import { Effect, Layer } from "effect"; // Removed Context, Data as they might not be needed directly
+import { Effect, Layer, Schema } from "effect"; // Removed Context, Data as they might not be needed directly
 import { assert, assertEquals } from "jsr:@std/assert"; // Corrected assert import
 import { describe, it } from "jsr:@std/testing/bdd";
 
@@ -69,8 +69,8 @@ describe("CatsService (Refined)", () => {
 
   it("getAllCats should return cats from the repository", async () => {
     const sampleCats: ReadonlyArray<Cat> = [
-      new Cat({ id: 1 as CatId, name: "Whiskers", breed: "Siamese", age: 2 }),
-      new Cat({ id: 2 as CatId, name: "Shadow", breed: "Maine Coon", age: 5 }),
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(1), name: "Whiskers", breed: "Siamese", age: 2 }),
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(2), name: "Shadow", breed: "Maine Coon", age: 5 }),
     ];
 
     const testEffect = Effect.gen(function* (_) {
@@ -85,7 +85,7 @@ describe("CatsService (Refined)", () => {
   });
 
   it("getCatById should return a cat when found", async () => {
-    const catId = 3 as CatId; // Using casting for CatId
+    const catId = Schema.decodeUnknownSync(CatId)(3); // Using casting for CatId
     const sampleCat = new Cat({
       id: catId,
       name: "Felix",
@@ -108,7 +108,7 @@ describe("CatsService (Refined)", () => {
   });
 
   it("getCatById should return CatNotFound error when cat is not found", async () => {
-    const nonExistentCatId = 99 as CatId; // Using casting for CatId
+    const nonExistentCatId = Schema.decodeUnknownSync(CatId)(99); // Using casting for CatId
 
     const testEffect = Effect.gen(function* (_) {
       const service = yield* _(CatsService);
