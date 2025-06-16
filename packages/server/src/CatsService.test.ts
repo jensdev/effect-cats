@@ -24,7 +24,7 @@ const runEffectTest = <E, A>(
   // Create a full mock implementation by merging partial mock with defaults that throw
   // UPDATE: Use CatsRepository["Type"]
   const fullMockImpl: CatsRepository["Type"] = {
-    getAll: Effect.die("getAll not implemented in mock"),
+    getCats: (_breed?: string, _age?: number, _name?: string) => Effect.die("getCats not implemented in mock"),
     getById: (id: CatId) =>
       Effect.die(`getById(${id}) not implemented in mock`),
     create: (name, breed, age) =>
@@ -55,19 +55,31 @@ const runEffectTest = <E, A>(
 };
 
 describe("CatsService (Refined)", () => {
-  it("getAllCats should return an empty array when repository is empty", async () => {
+  // Variables to spy on repository calls
+  let getCatsSpy: { calledWith?: { breed?: string; age?: number; name?: string } } = {};
+
+  // Enhanced runEffectTest or direct mock setup might be needed if more complex spying is required.
+  // For now, we'll adapt the mockRepoPartialImpl for each test.
+
+  it("getCats should return an empty array when repository is empty (no params)", async () => {
+    getCatsSpy = {}; // Reset spy
     const testEffect = Effect.gen(function* (_) {
       const service = yield* _(CatsService);
-      const cats = yield* _(service.getAllCats);
+      const cats = yield* _(service.getCats()); // Call without params
       assertEquals(cats.length, 0);
     });
 
     await runEffectTest(testEffect, {
-      getAll: Effect.succeed([] as ReadonlyArray<Cat>),
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        return Effect.succeed([] as ReadonlyArray<Cat>);
+      },
     });
+    assertEquals(getCatsSpy.calledWith, { breed: undefined, age: undefined, name: undefined });
   });
 
-  it("getAllCats should return cats from the repository", async () => {
+  it("getCats should return cats from the repository (no params)", async () => {
+    getCatsSpy = {}; // Reset spy
     const sampleCats: ReadonlyArray<Cat> = [
       new Cat({
         id: Schema.decodeUnknownSync(CatId)(1),
@@ -85,13 +97,118 @@ describe("CatsService (Refined)", () => {
 
     const testEffect = Effect.gen(function* (_) {
       const service = yield* _(CatsService);
-      const cats = yield* _(service.getAllCats);
+      const cats = yield* _(service.getCats()); // Call without params
       assertEquals(cats, sampleCats);
     });
 
     await runEffectTest(testEffect, {
-      getAll: Effect.succeed(sampleCats),
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        return Effect.succeed(sampleCats);
+      },
     });
+    assertEquals(getCatsSpy.calledWith, { breed: undefined, age: undefined, name: undefined });
+  });
+
+  it("getCats should call repository.getCats with provided breed, age, and name", async () => {
+    getCatsSpy = {}; // Reset spy
+    const filterParams = { breed: "Siamese", age: 2, name: "Whiskers" };
+    const expectedCats: ReadonlyArray<Cat> = [
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(1), ...filterParams }),
+    ];
+
+    const testEffect = Effect.gen(function* (_) {
+      const service = yield* _(CatsService);
+      const cats = yield* _(service.getCats(filterParams.breed, filterParams.age, filterParams.name));
+      assertEquals(cats, expectedCats);
+    });
+
+    await runEffectTest(testEffect, {
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        // Simulate filtering by returning specific cats if params match
+        if (breed === filterParams.breed && age === filterParams.age && name === filterParams.name) {
+          return Effect.succeed(expectedCats);
+        }
+        return Effect.succeed([] as ReadonlyArray<Cat>);
+      },
+    });
+    assertEquals(getCatsSpy.calledWith, filterParams);
+  });
+
+  it("getCats should call repository.getCats with only breed", async () => {
+    getCatsSpy = {}; // Reset spy
+    const filterParams = { breed: "Persian" };
+    const expectedCats: ReadonlyArray<Cat> = [
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(2), name: "Mittens", breed: "Persian", age: 5 }),
+    ];
+
+    const testEffect = Effect.gen(function* (_) {
+      const service = yield* _(CatsService);
+      const cats = yield* _(service.getCats(filterParams.breed));
+      assertEquals(cats, expectedCats);
+    });
+
+    await runEffectTest(testEffect, {
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        if (breed === filterParams.breed && age === undefined && name === undefined) {
+          return Effect.succeed(expectedCats);
+        }
+        return Effect.succeed([] as ReadonlyArray<Cat>);
+      },
+    });
+    assertEquals(getCatsSpy.calledWith, { breed: filterParams.breed, age: undefined, name: undefined });
+  });
+
+  it("getCats should call repository.getCats with only age", async () => {
+    getCatsSpy = {}; // Reset spy
+    const filterParams = { age: 3 };
+    const expectedCats: ReadonlyArray<Cat> = [
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(3), name: "Shadow", breed: "Maine Coon", age: 3 }),
+    ];
+
+    const testEffect = Effect.gen(function* (_) {
+      const service = yield* _(CatsService);
+      const cats = yield* _(service.getCats(undefined, filterParams.age));
+      assertEquals(cats, expectedCats);
+    });
+
+    await runEffectTest(testEffect, {
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        if (breed === undefined && age === filterParams.age && name === undefined) {
+          return Effect.succeed(expectedCats);
+        }
+        return Effect.succeed([] as ReadonlyArray<Cat>);
+      },
+    });
+    assertEquals(getCatsSpy.calledWith, { breed: undefined, age: filterParams.age, name: undefined });
+  });
+
+  it("getCats should call repository.getCats with only name", async () => {
+    getCatsSpy = {}; // Reset spy
+    const filterParams = { name: "Luna" };
+    const expectedCats: ReadonlyArray<Cat> = [
+      new Cat({ id: Schema.decodeUnknownSync(CatId)(4), name: "Luna", breed: "Siamese", age: 2 }),
+    ];
+
+    const testEffect = Effect.gen(function* (_) {
+      const service = yield* _(CatsService);
+      const cats = yield* _(service.getCats(undefined, undefined, filterParams.name));
+      assertEquals(cats, expectedCats);
+    });
+
+    await runEffectTest(testEffect, {
+      getCats: (breed, age, name) => {
+        getCatsSpy.calledWith = { breed, age, name };
+        if (breed === undefined && age === undefined && name === filterParams.name) {
+          return Effect.succeed(expectedCats);
+        }
+        return Effect.succeed([] as ReadonlyArray<Cat>);
+      },
+    });
+    assertEquals(getCatsSpy.calledWith, { breed: undefined, age: undefined, name: filterParams.name });
   });
 
   it("getCatById should return a cat when found", async () => {
