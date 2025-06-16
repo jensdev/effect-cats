@@ -31,14 +31,24 @@ TypeScript and the Effect-TS library.
    cd effect-cats
    ```
 2. **Set up Deno with `mise`**:
-   - This project uses `mise` (a dev environment manager) to ensure the correct Deno version is used. The Deno version is specified in the `.mise.toml` file in the project root.
-   - **One-Time Setup**: Run the setup script to install `mise` and configure it for your shell:
+   - This project uses `mise` (a dev environment manager) to ensure the correct
+     Deno version is used. The Deno version is specified in the `.mise.toml`
+     file in the project root.
+   - **One-Time Setup**: Run the setup script to install `mise` and configure it
+     for your shell:
      ```bash
      sh ./setup-mise-deno.sh
      ```
-   - After running the script, follow its instructions, which may involve restarting your terminal or sourcing your shell configuration file (e.g., `source ~/.bashrc`).
-   - **Automatic Version Management**: If `mise` is correctly installed and hooked into your shell, it will automatically switch to the Deno version specified in `.mise.toml` when you navigate into this project's directory. You typically won't need to manually install or switch Deno versions for this project.
-   - For more information on `mise`, visit [https://mise.jdx.dev/](https://mise.jdx.dev/).
+   - After running the script, follow its instructions, which may involve
+     restarting your terminal or sourcing your shell configuration file (e.g.,
+     `source ~/.bashrc`).
+   - **Automatic Version Management**: If `mise` is correctly installed and
+     hooked into your shell, it will automatically switch to the Deno version
+     specified in `.mise.toml` when you navigate into this project's directory.
+     You typically won't need to manually install or switch Deno versions for
+     this project.
+   - For more information on `mise`, visit
+     [https://mise.jdx.dev/](https://mise.jdx.dev/).
 3. **Run the development server**:
    ```bash
    deno task dev
@@ -126,16 +136,32 @@ for tasks defined in `deno.json`, or using built-in Deno commands:
 - **Build**: Deno can create executables using
   `deno compile <your-main-script.ts>`. For more complex build processes (e.g.,
   building multiple packages), custom tasks can be defined in `deno.json`.
-- `deno task dev`: Runs the main application (the server) in development mode with file watching. This task is defined in the root `deno.json` and delegates to the `dev` task in `packages/server/deno.json`.
-  - The server's `dev` task (`packages/server/src/main.ts`) uses specific permissions: `--allow-net` (for network access), `--allow-env=PORT` (to read the PORT environment variable), `--allow-read` (for file system read access), and importantly, `--allow-ffi`.
-  - **Note on `--allow-ffi`**: This flag grants permission to load foreign function interfaces (native dynamic libraries). It should be reviewed if FFI is not an expected requirement for the project's dependencies or server functionality. It's included based on previous configurations and should be audited for necessity.
+- `deno task dev`: Runs the main application (the server) in development mode
+  with file watching. This task is defined in the root `deno.json` and delegates
+  to the `dev` task in `packages/server/deno.json`.
+  - The server's `dev` task (`packages/server/src/main.ts`) uses specific
+    permissions: `--allow-net` (for network access), `--allow-env=PORT` (to read
+    the PORT environment variable), `--allow-read` (for file system read
+    access), and importantly, `--allow-ffi`.
+  - **Note on `--allow-ffi`**: This flag grants permission to load foreign
+    function interfaces (native dynamic libraries). It should be reviewed if FFI
+    is not an expected requirement for the project's dependencies or server
+    functionality. It's included based on previous configurations and should be
+    audited for necessity.
 - `deno task lint`: Lints the codebase using Deno's built-in linter (as
   described in the "Development" section).
 - `deno task fmt`: Formats the codebase using Deno's built-in formatter (as
   described in the "Development" section).
-- `deno task test`: Runs tests using Deno's built-in test runner. The root task is configured with `--allow-read --allow-env=PORT,BASE_URL`.
-  - Individual package test tasks might have more specific flags. For example, the test task in `packages/server/deno.json` (`deno test --allow-read --allow-env=PORT --unstable src/**/*.test.ts`) also includes the `--unstable` flag.
-  - **Note on `--unstable`**: This flag is used because some tests may rely on Deno APIs or testing features (e.g., from `@std/testing` or other dependencies) that are not yet stabilized. This is common for projects leveraging cutting-edge Deno capabilities.
+- `deno task test`: Runs tests using Deno's built-in test runner. The root task
+  is configured with `--allow-read --allow-env=PORT,BASE_URL`.
+  - Individual package test tasks might have more specific flags. For example,
+    the test task in `packages/server/deno.json`
+    (`deno test --allow-read --allow-env=PORT --unstable src/**/*.test.ts`) also
+    includes the `--unstable` flag.
+  - **Note on `--unstable`**: This flag is used because some tests may rely on
+    Deno APIs or testing features (e.g., from `@std/testing` or other
+    dependencies) that are not yet stabilized. This is common for projects
+    leveraging cutting-edge Deno capabilities.
 - **Clean**: A `clean` task can be added to `deno.json` to remove build
   artifacts (e.g., `dist` folders, `deno.lock`, `nodeModulesDir` if applicable).
 
