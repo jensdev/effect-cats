@@ -13,29 +13,17 @@ import { CatsRepository } from "./CatsRepository.ts"; // CRUCIAL: Assumes this f
 // This line assumes CatsRepository has an 'of' static method and its first parameter is the service impl
 // If CatsRepository is just a Tag<Interface>, this will need adjustment.
 // For now, let's define a similar structure to what CatsRepository.of might expect.
-interface CatsRepositoryInterface {
-  readonly getAll: Effect.Effect<ReadonlyArray<Cat>, never>;
-  readonly getById: (id: CatId) => Effect.Effect<Cat, CatNotFound>;
-  readonly create: (
-    name: string,
-    breed: string,
-    age: number,
-  ) => Effect.Effect<Cat>;
-  readonly update: (
-    id: CatId,
-    data: Partial<Omit<Cat, "id">>,
-  ) => Effect.Effect<Cat, CatNotFound>;
-  readonly remove: (id: CatId) => Effect.Effect<void, CatNotFound>;
-}
+
 // We'll use this Partial type for providing mocks.
-type MockCatsRepositoryPartialImpl = Partial<CatsRepositoryInterface>;
 
 const runEffectTest = <E, A>(
   effectToRun: Effect.Effect<A, E, CatsService>, // The effect needs CatsService
-  mockRepoPartialImpl: MockCatsRepositoryPartialImpl = {}, // Default to empty mock
+  // UPDATE: Use Partial<CatsRepository["Type"]>
+  mockRepoPartialImpl: Partial<CatsRepository["Type"]> = {}, // Default to empty mock
 ) => {
   // Create a full mock implementation by merging partial mock with defaults that throw
-  const fullMockImpl: CatsRepositoryInterface = {
+  // UPDATE: Use CatsRepository["Type"]
+  const fullMockImpl: CatsRepository["Type"] = {
     getAll: Effect.die("getAll not implemented in mock"),
     getById: (id: CatId) =>
       Effect.die(`getById(${id}) not implemented in mock`),
