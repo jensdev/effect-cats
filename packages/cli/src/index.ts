@@ -19,10 +19,10 @@ const program = Effect.gen(function* () {
 
   if (result._tag === "Left") {
     // Handle error
-    console.error("Error fetching cats:", result.left);
+    yield* Effect.logError("Error fetching cats:", result.left);
   } else {
     // Handle success
-    console.log(result.right);
+    console.log(result.right); // Keep console.log for successful output as it's typical for CLIs
   }
 });
 
