@@ -17,7 +17,8 @@ export class Cat extends Schema.Class<Cat>("Cat")({
   }),
   breed: Schema.NonEmptyTrimmedString.annotations({
     description: "The breed of the cat.",
-    examples: ["Siamese", "Whiskers", "Mittens"],
+    // MODIFIED LINE:
+    examples: ["Siamese", "Persian", "Maine Coon"],
   }),
   age: Schema.Number.pipe(
     Schema.int(),
