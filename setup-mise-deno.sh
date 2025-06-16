@@ -28,6 +28,7 @@ echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 alias mise='~/.local/bin/mise'
 
+~/.local/bin/mise mise use -g deno@latest
 ~/.local/bin/mise mise trust
 ~/.local/bin/mise mise activate
 
