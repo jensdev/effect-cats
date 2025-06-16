@@ -6,7 +6,11 @@ import { CatsRepository } from "./CatsRepository.ts";
 export class CatsService extends Context.Tag("Cats/Service")<
   CatsService,
   {
-    readonly getAllCats: Effect.Effect<ReadonlyArray<Cat>, never>;
+    readonly getCats: (
+      breed?: string,
+      age?: number,
+      name?: string,
+    ) => Effect.Effect<ReadonlyArray<Cat>, never>;
     readonly getCatById: (id: CatId) => Effect.Effect<Cat, CatNotFound>;
     readonly createCat: (
       name: string,
@@ -28,11 +32,14 @@ export const CatsServiceLive = Layer.effect(
     const repository = yield* _(CatsRepository);
 
     return {
-      getAllCats: Effect.logDebug("getAllCats called").pipe(
-        Effect.flatMap(() => repository.getAll),
-        Effect.tap((cats) => Effect.logInfo(`Retrieved ${cats.length} cats`)),
-        Effect.withSpan("CatsService/getAllCats"),
-      ),
+      getCats: (breed?: string, age?: number, name?: string) =>
+        Effect.logDebug("getCats called").pipe(
+          Effect.flatMap(() => repository.getCats(breed, age, name)),
+          Effect.tap((cats) =>
+            Effect.logInfo(`Retrieved ${cats.length} cats`),
+          ),
+          Effect.withSpan("CatsService/getCats"),
+        ),
       getCatById: (id: CatId) =>
         Effect.logDebug(`getCatById called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.getById(id)),

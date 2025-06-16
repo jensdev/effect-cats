@@ -5,7 +5,11 @@ import { Array, Context, Effect, Layer, Option } from "effect";
 export class CatsRepository extends Context.Tag("Cats/Repository")<
   CatsRepository,
   {
-    readonly getAll: Effect.Effect<ReadonlyArray<Cat>, never>;
+    readonly getCats: (
+      breed?: string,
+      age?: number,
+      name?: string,
+    ) => Effect.Effect<ReadonlyArray<Cat>, never>;
     readonly getById: (id: CatId) => Effect.Effect<Cat, CatNotFound>;
     readonly create: (
       name: string,
@@ -28,9 +32,24 @@ export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
   const getNextId = (): CatId => CatId.make(nextId++);
 
   return {
-    getAll: Effect.sync(() => Array.fromIterable(catsStore.values())).pipe(
-      Effect.withSpan("CatsRepository/getAll"),
-    ),
+    getCats: (breed?: string, age?: number, name?: string) =>
+      Effect.sync(() => {
+        const allCats = Array.fromIterable(catsStore.values());
+
+        return Array.filter(allCats, (cat) => {
+          let matches = true;
+          if (breed) {
+            matches = matches && cat.breed.toLowerCase().includes(breed.toLowerCase());
+          }
+          if (age !== undefined) {
+            matches = matches && cat.age === age;
+          }
+          if (name) {
+            matches = matches && cat.name.toLowerCase().includes(name.toLowerCase());
+          }
+          return matches;
+        });
+      }).pipe(Effect.withSpan("CatsRepository/getCats")),
     getById: (id: CatId) =>
       Option.fromNullable(catsStore.get(id)).pipe(
         Effect.mapError(() => new CatNotFound({ id })),
