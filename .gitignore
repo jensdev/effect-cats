@@ -2,3 +2,6 @@ node_modules
 dist/
 dist
 **/dist
+deno_lint_output.txt
+git_status_after_fmt.txt
+install_deno.sh
