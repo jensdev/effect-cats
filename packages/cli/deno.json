@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --watch src/index.ts"
+    "dev": "deno run --reload --check=all --watch src/index.ts"
   },
   "imports": {
     "@effect/platform": "npm:@effect/platform@^0.84.11",

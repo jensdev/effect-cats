@@ -69,8 +69,18 @@ describe("CatsService (Refined)", () => {
 
   it("getAllCats should return cats from the repository", async () => {
     const sampleCats: ReadonlyArray<Cat> = [
-      new Cat({ id: Schema.decodeUnknownSync(CatId)(1), name: "Whiskers", breed: "Siamese", age: 2 }),
-      new Cat({ id: Schema.decodeUnknownSync(CatId)(2), name: "Shadow", breed: "Maine Coon", age: 5 }),
+      new Cat({
+        id: Schema.decodeUnknownSync(CatId)(1),
+        name: "Whiskers",
+        breed: "Siamese",
+        age: 2,
+      }),
+      new Cat({
+        id: Schema.decodeUnknownSync(CatId)(2),
+        name: "Shadow",
+        breed: "Maine Coon",
+        age: 5,
+      }),
     ];
 
     const testEffect = Effect.gen(function* (_) {

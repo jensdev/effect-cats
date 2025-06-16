@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --watch src/main.ts"
+    "dev": "deno run --watch src/main.ts" // Purpose: Watches domain files (like src/main.ts and src/index.ts) for changes, useful during development (e.g., for type checking). Does not run a standalone server.
   },
   "imports": {
     "@effect/platform": "npm:@effect/platform@^0.84.11",
