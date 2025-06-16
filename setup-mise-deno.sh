@@ -28,7 +28,8 @@ echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 alias mise='~/.local/bin/mise'
 
-mise trust
+~/.local/bin/mise mise trust
+~/.local/bin/mise mise activate
 
 echo "Installation and setup script finished."
 echo "Please close and reopen your terminal or source your shell configuration file (e.g., source ~/.bashrc) for changes to take effect."
