@@ -37,8 +37,9 @@ export const CatsServiceLive = Layer.effect(
         Effect.logDebug(`getCatById called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.getById(id)),
           Effect.tap((cat) => Effect.logInfo(`Retrieved cat: ${cat.name}`)),
-          Effect.tapErrorTag("CatNotFound", (e) =>
-            Effect.logWarning(`Cat with id: ${e.id} not found`),
+          Effect.tapErrorTag(
+            "CatNotFound",
+            (e) => Effect.logWarning(`Cat with id: ${e.id} not found`),
           ),
           Effect.withSpan("CatsService/getCatById", {
             attributes: { "cat.id": id },
@@ -48,7 +49,7 @@ export const CatsServiceLive = Layer.effect(
         Effect.logDebug(`createCat called with name: ${name}`).pipe(
           Effect.flatMap(() => repository.create(name, breed, age)),
           Effect.tap((cat) =>
-            Effect.logInfo(`Created cat: ${cat.name} with id: ${cat.id}`),
+            Effect.logInfo(`Created cat: ${cat.name} with id: ${cat.id}`)
           ),
           Effect.withSpan("CatsService/createCat", {
             attributes: {
@@ -62,8 +63,10 @@ export const CatsServiceLive = Layer.effect(
         Effect.logDebug(`updateCat called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.update(id, data)),
           Effect.tap((cat) => Effect.logInfo(`Updated cat: ${cat.name}`)),
-          Effect.tapErrorTag("CatNotFound", (e) =>
-            Effect.logWarning(`Cat with id: ${e.id} not found during update`),
+          Effect.tapErrorTag(
+            "CatNotFound",
+            (e) =>
+              Effect.logWarning(`Cat with id: ${e.id} not found during update`),
           ),
           Effect.withSpan("CatsService/updateCat", {
             attributes: { "cat.id": id, "cat.updateData": true },
@@ -73,10 +76,12 @@ export const CatsServiceLive = Layer.effect(
         Effect.logDebug(`deleteCat called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.remove(id)),
           Effect.tap(() =>
-            Effect.logInfo(`Attempted to delete cat with id: ${id}`),
+            Effect.logInfo(`Attempted to delete cat with id: ${id}`)
           ),
-          Effect.tapErrorTag("CatNotFound", (e) =>
-            Effect.logWarning(`Cat with id: ${e.id} not found for deletion`),
+          Effect.tapErrorTag(
+            "CatNotFound",
+            (e) =>
+              Effect.logWarning(`Cat with id: ${e.id} not found for deletion`),
           ),
           Effect.withSpan("CatsService/deleteCat", {
             attributes: { "cat.id": id },
