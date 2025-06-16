@@ -1,8 +1,12 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@std/assert@*": "1.0.13",
     "jsr:@std/assert@1": "1.0.13",
+    "jsr:@std/assert@^1.0.13": "1.0.13",
     "jsr:@std/internal@^1.0.6": "1.0.8",
+    "jsr:@std/internal@^1.0.8": "1.0.8",
+    "jsr:@std/testing@*": "1.0.14",
     "npm:@effect/platform-node@~0.85.16": "0.85.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7",
     "npm:@effect/platform@~0.84.11": "0.84.11_effect@3.16.7",
     "npm:@types/node@*": "22.15.15",
@@ -12,11 +16,18 @@
     "@std/assert@1.0.13": {
       "integrity": "ae0d31e41919b12c656c742b22522c32fb26ed0cba32975cb0de2a273cb68b29",
       "dependencies": [
-        "jsr:@std/internal"
+        "jsr:@std/internal@^1.0.6"
       ]
     },
     "@std/internal@1.0.8": {
       "integrity": "fc66e846d8d38a47cffd274d80d2ca3f0de71040f855783724bb6b87f60891f5"
+    },
+    "@std/testing@1.0.14": {
+      "integrity": "144b3737105b9071cb50c957681f58a1b8ec0f3e5b19ad830f401c5fa931e8f0",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.13",
+        "jsr:@std/internal@^1.0.8"
+      ]
     }
   },
   "npm": {
