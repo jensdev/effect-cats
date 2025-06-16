@@ -1,10 +1,10 @@
 import { FetchHttpClient, HttpApiClient } from "@effect/platform";
 import { CatsApi } from "@effect-cats/domain";
-import { Effect, Config } from "effect";
+import { Config, Effect } from "effect";
 
 // Define the configuration for the baseUrl
 const baseUrlConfig = Config.string("BASE_URL").pipe(
-  Config.withDefault("http://localhost:3000")
+  Config.withDefault("http://localhost:3000"),
 );
 
 // Create a program that derives and uses the client

@@ -1,4 +1,4 @@
-import { Effect, Layer, pipe } from "effect"; // Removed Context, Data as they might not be needed directly
+import { Effect, Layer } from "effect"; // Removed Context, Data as they might not be needed directly
 import { assert, assertEquals } from "jsr:@std/assert"; // Corrected assert import
 import { describe, it } from "jsr:@std/testing/bdd";
 

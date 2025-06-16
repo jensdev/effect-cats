@@ -22,7 +22,7 @@ export class CatsRepository extends Context.Tag("Cats/Repository")<
 
 // Implement an in-memory version of the repository
 export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
-  let catsStore: Map<number, Cat> = new Map();
+  const catsStore: Map<number, Cat> = new Map();
   let nextId = 1;
 
   const getNextId = (): CatId => CatId.make(nextId++);
