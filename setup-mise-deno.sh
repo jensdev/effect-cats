@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# !/usr/bin/env bash
 # This script is for a one-time setup of `mise` (a dev environment manager).
 # It installs `mise` and attempts to add `mise activate` to the shell's rc file (~/.bashrc).
 # Users should verify the change to their shell rc file or configure it manually
@@ -8,7 +8,7 @@
 # which `mise` will use automatically when navigating into the project directory
 # (assuming `mise` is correctly hooked into the shell).
 
-set -e # Exit immediately if a command exits with a non-zero status.
+# set -e # Exit immediately if a command exits with a non-zero status.
 
 echo "Installing mise..."
 curl https://mise.run | sh
@@ -28,6 +28,9 @@ echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 alias mise='~/.local/bin/mise'
 
+mise trust
+
 echo "Installation and setup script finished."
 echo "Please close and reopen your terminal or source your shell configuration file (e.g., source ~/.bashrc) for changes to take effect."
 echo "After that, 'mise' should automatically manage the Deno version when you are in this project's directory."
+source ~/.bashrc
