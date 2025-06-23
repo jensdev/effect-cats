@@ -1,27 +1,46 @@
-# effect-cats
+# 🐱 Effect Cats API
 
 A project demonstrating a CRUD API for managing cat information, built with
-TypeScript and the Effect-TS library.
+TypeScript and the Effect library. Now with health monitoring!
 
 ## Tech Stack
 
 - TypeScript
-- Effect-TS
+- Effect
 - Deno (replacing Node.js, NPM Workspaces, and Turbo)
   - Utilizes Deno's built-in tools, including its task runner (`deno task`),
     formatter (`deno fmt`), and linter (`deno lint`).
 
-## Project Structure
+## 📁 Project Structure
 
-- `packages/domain`: Contains the core business logic, schemas (like `Cat`,
-  `CatId`), and API definitions (`CatsApi`).
-- `packages/server`: Implements the API defined in the `domain` package,
-  including services, repositories, and the main server setup.
-- `packages/cli`: A command-line interface for interacting with the Cats API.
-- `deno.json`: The configuration file for Deno, specifying project settings,
-  dependencies, and tasks.
-- `deno.lock`: The lock file that ensures deterministic builds by pinning
-  dependency versions.
+```
+effect-cats/
+├── packages/
+│   ├── domain/              # 🏗️ Domain Layer
+│   │   ├── src/
+│   │   │   ├── Cats.ts          # Cat entity and schemas
+│   │   │   ├── CatsApi.ts       # HTTP API definitions
+│   │   │   ├── Errors.ts        # 🚨 Domain error types
+│   │   │   └── index.ts         # Domain exports
+│   │   └── deno.json
+│   ├── server/              # 🖥️ Application Layer
+│   │   ├── src/
+│   │   │   ├── main.ts          # Application entry point
+│   │   │   ├── Config.ts        # ⚙️ Configuration management
+│   │   │   ├── CatsService.ts   # 🎯 Business logic layer
+│   │   │   ├── CatsRepository.ts # 💾 Data access layer
+│   │   │   ├── CatsApiImpl.ts   # 🌐 HTTP handlers
+│   │   │   ├── Middleware.ts    # 🛡️ Custom middleware
+│   │   │   └── environments/    # 🌍 Environment configs
+│   │   │       ├── development.ts
+│   │   │       └── production.ts
+│   │   └── deno.json
+│   └── cli/                 # 🖱️ Command Line Interface
+│       ├── src/index.ts
+│       └── deno.json
+├── deno.json               # Root configuration
+└── deno.lock              # Dependency lock file
+```
 
 ## Getting Started
 
@@ -34,11 +53,6 @@ TypeScript and the Effect-TS library.
    - This project uses `mise` (a dev environment manager) to ensure the correct
      Deno version is used. The Deno version is specified in the `.mise.toml`
      file in the project root.
-   - **One-Time Setup**: Run the setup script to install `mise` and configure it
-     for your shell:
-     ```bash
-     sh ./setup-mise-deno.sh
-     ```
    - After running the script, follow its instructions, which may involve
      restarting your terminal or sourcing your shell configuration file (e.g.,
      `source ~/.bashrc`).
@@ -169,6 +183,7 @@ for tasks defined in `deno.json`, or using built-in Deno commands:
 
 The following API endpoints are available:
 
+- `GET /health`: Health check endpoint.
 - `GET /cats`: Get all cats.
 - `GET /cats/:id`: Get a cat by its ID.
 - `POST /cats`: Create a new cat.
