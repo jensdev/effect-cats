@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --reload --check=all --watch src/main.ts",
+    "dev": "deno run -RE --allow-ffi --allow-net --reload --check=all --watch src/main.ts",
     "test": "deno test -A --unstable src/**/*.test.ts",
     "fmt": "deno fmt src/**/*.ts"
   },

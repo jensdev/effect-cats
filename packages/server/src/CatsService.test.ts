@@ -7,7 +7,7 @@ import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 
 // Service and ACTUAL Repository Tag imports
 import { CatsService, CatsServiceLive } from "./CatsService.ts";
-import { CatsRepository } from "./CatsRepository.ts"; // CRUCIAL: Assumes this file exports the Tag
+import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
 
 // The mock implementation's type should ideally match the actual service interface provided by CatsRepository
 // This line assumes CatsRepository has an 'of' static method and its first parameter is the service impl
@@ -19,11 +19,11 @@ import { CatsRepository } from "./CatsRepository.ts"; // CRUCIAL: Assumes this f
 const runEffectTest = <E, A>(
   effectToRun: Effect.Effect<A, E, CatsService>, // The effect needs CatsService
   // UPDATE: Use Partial<CatsRepository["Type"]>
-  mockRepoPartialImpl: Partial<CatsRepository["Type"]> = {}, // Default to empty mock
+  mockRepoPartialImpl: Partial<CatsRepositoryPort["Type"]> = {}, // Default to empty mock
 ) => {
   // Create a full mock implementation by merging partial mock with defaults that throw
   // UPDATE: Use CatsRepository["Type"]
-  const fullMockImpl: CatsRepository["Type"] = {
+  const fullMockImpl: CatsRepositoryPort["Type"] = {
     getAll: Effect.die("getAll not implemented in mock"),
     getById: (id: CatId) =>
       Effect.die(`getById(${id}) not implemented in mock`),
@@ -44,8 +44,8 @@ const runEffectTest = <E, A>(
   // The instruction `CatsRepository.of(fullMockImpl)` implies CatsRepository is a class or object with `of`.
   // Let's assume CatsRepository is a TagClass-like object.
   const mockCatsRepositoryLayer = Layer.succeed(
-    CatsRepository,
-    CatsRepository.of(fullMockImpl), // Construct the service implementation
+    CatsRepositoryPort,
+    CatsRepositoryPort.of(fullMockImpl), // Construct the service implementation
   );
 
   const testLayer = Layer.provide(CatsServiceLive, mockCatsRepositoryLayer);
