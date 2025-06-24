@@ -1,4 +1,4 @@
-import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
+import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 import { Cat, CatIdFromString } from "./Cats.ts"; // Import Cat and CatIdFromString
 
@@ -11,7 +11,7 @@ export class CatNotFound extends Schema.TaggedError<CatNotFound>()(
   },
 ) {}
 
-export class CatsApiGroup extends HttpApiGroup.make("cats")
+export const catsApiGroup = HttpApiGroup.make("cats")
   .add(HttpApiEndpoint.get("getAllCats", "/cats").addSuccess(Schema.Array(Cat)))
   .add(
     HttpApiEndpoint.get("getCatById", "/cats/:id")
@@ -38,6 +38,4 @@ export class CatsApiGroup extends HttpApiGroup.make("cats")
       .addSuccess(Schema.Void)
       .addError(CatNotFound, { status: 404 })
       .setPath(Schema.Struct({ id: CatIdFromString })),
-  ) {}
-
-export class CatsApi extends HttpApi.make("api").add(CatsApiGroup) {}
+  );

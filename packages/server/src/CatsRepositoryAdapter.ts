@@ -1,27 +1,9 @@
 import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
-import { Array, Context, Effect, Layer, Option } from "effect";
+import { Array,  Effect, Layer, Option } from "effect";
+import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
 
-// Create a context tag for the repository
-export class CatsRepository extends Context.Tag("Cats/Repository")<
-  CatsRepository,
-  {
-    readonly getAll: Effect.Effect<ReadonlyArray<Cat>, never>;
-    readonly getById: (id: CatId) => Effect.Effect<Cat, CatNotFound>;
-    readonly create: (
-      name: string,
-      breed: string,
-      age: number,
-    ) => Effect.Effect<Cat, never>;
-    readonly update: (
-      id: CatId,
-      data: Partial<Omit<Cat, "id">>,
-    ) => Effect.Effect<Cat, CatNotFound>;
-    readonly remove: (id: CatId) => Effect.Effect<void, CatNotFound>;
-  }
->() {}
 
-// Implement an in-memory version of the repository
-export const CatsRepositoryLive = Layer.sync(CatsRepository, () => {
+export const CatsRepositoryAdapterInMemoryLive = Layer.sync(CatsRepositoryPort, () => {
   const catsStore: Map<number, Cat> = new Map();
   let nextId = 1;
 

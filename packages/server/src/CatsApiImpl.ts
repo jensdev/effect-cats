@@ -1,10 +1,10 @@
-import { HttpApiBuilder } from "@effect/platform";
-import { CatsApi } from "@effect-cats/domain";
 import { Effect } from "effect";
 import { CatsService } from "./CatsService.ts"; // Import CatsService
+import { HttpApiBuilder } from "@effect/platform";
+import { api } from "@effect-cats/domain";
 
-export const CatsApiLive = HttpApiBuilder.group(
-  CatsApi,
+export const catsApiLiveGroup = HttpApiBuilder.group(
+  api,
   "cats",
   (handlers) =>
     Effect.gen(function* (_) {

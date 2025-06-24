@@ -1,5 +1,5 @@
 import { FetchHttpClient, HttpApiClient } from "@effect/platform";
-import { CatsApi } from "@effect-cats/domain";
+import { api } from "@effect-cats/domain";
 import { Config, Effect } from "effect";
 
 // Define the configuration for the baseUrl
@@ -11,7 +11,7 @@ const baseUrlConfig = Config.string("BASE_URL").pipe(
 const program = Effect.gen(function* () {
   const baseUrl = yield* baseUrlConfig;
   // Derive the client
-  const client = yield* HttpApiClient.make(CatsApi, {
+  const client = yield* HttpApiClient.make(api, {
     baseUrl,
   });
   // Call the `getUser` endpoint
