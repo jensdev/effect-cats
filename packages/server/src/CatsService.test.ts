@@ -7,7 +7,7 @@ import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 
 // Service and ACTUAL Repository Tag imports
 import { CatsService, CatsServiceLive } from "./CatsService.ts";
-import { CatsRepositoryPort } from "./CatsRepositoryPort.ts"; // Corrected import
+import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
 
 // The mock implementation's type should ideally match the actual service interface provided by CatsRepositoryPort
 // This line assumes CatsRepositoryPort has an 'of' static method and its first parameter is the service impl
@@ -18,18 +18,20 @@ import { CatsRepositoryPort } from "./CatsRepositoryPort.ts"; // Corrected impor
 
 const runEffectTest = <E, A>(
   effectToRun: Effect.Effect<A, E, CatsService>, // The effect needs CatsService
-  // UPDATE: Use Partial<CatsRepositoryPort["Type"]>
+  // UPDATE: Use Partial<CatsRepository["Type"]>
   mockRepoPartialImpl: Partial<CatsRepositoryPort["Type"]> = {}, // Default to empty mock
 ) => {
   // Create a full mock implementation by merging partial mock with defaults that throw
-  // UPDATE: Use CatsRepositoryPort["Type"]
+  // UPDATE: Use CatsRepository["Type"]
   const fullMockImpl: CatsRepositoryPort["Type"] = {
     getAll: Effect.die("getAll not implemented in mock"),
     getById: (id: CatId) =>
       Effect.die(`getById(${id}) not implemented in mock`),
-    create: (name: string, breed: string, age: number) => // Added types
+    create: (name: string, breed: string, age: number) =>
+      // Added types
       Effect.die(`create(${name}, ${breed}, ${age}) not implemented in mock`),
-    update: (id: CatId, data: Partial<Omit<Cat, "id">>) => // Added types
+    update: (id: CatId, data: Partial<Omit<Cat, "id">>) =>
+      // Added types
       Effect.die(
         `update(${id}, ${JSON.stringify(data)}) not implemented in mock`,
       ),
@@ -45,7 +47,7 @@ const runEffectTest = <E, A>(
   // Corrected to directly use fullMockImpl as CatsRepositoryPort is a Context.Tag
   const mockCatsRepositoryLayer = Layer.succeed(
     CatsRepositoryPort,
-    fullMockImpl, // Construct the service implementation
+    CatsRepositoryPort.of(fullMockImpl), // Construct the service implementation
   );
 
   const testLayer = Layer.provide(CatsServiceLive, mockCatsRepositoryLayer);
