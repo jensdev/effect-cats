@@ -9,8 +9,8 @@ This instructs AI agents how to navigate and edit this codebase.
 
 # Code
 
-- When importing Effect Schema, always alias it as S, like so:
-  `import { Schema as S } from "effect"`
+- When importing Effect Schema use it like so:
+  `import { Schema } from "effect"`
 - When importing node modules, always import the full module and name it NPath
   for node:path, NUrl for node:url, etc.
 - Always use extension in file imports.
