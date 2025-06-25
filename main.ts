@@ -7,7 +7,7 @@ import {
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import { Config, Effect, Layer } from "effect";
 
-import { CatsRepositoryInMemoryLive } from "./infrastructure/secondary/cats.in-memory.ts";
+import { CatsRepositoryInMemoryLive } from "./infrastructure/secondary/cats-in-memory.ts";
 import { catsApiLiveGroup } from "./infrastructure/primary/cats.ts";
 import { healthApiLiveGroup } from "./infrastructure/primary/health.ts";
 

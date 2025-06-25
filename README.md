@@ -94,7 +94,7 @@ This project follows the Hexagonal Architecture pattern to ensure a separation o
         *   `cats.contract.ts`, `health.contract.ts`: Define the API contracts (e.g., using Hono or a similar library type definitions for request/response shapes).
         *   `cats.ts`, `health.ts`: Implement the API endpoints.
     *   `secondary/` (Driven Adapters): Adapters that are driven by the application (e.g., database repositories, external service clients).
-        *   `cats.in-memory.ts`: An in-memory implementation of the `CatRepository` output port.
+        *   `cats-in-memory.ts`: An in-memory implementation of the `CatRepository` output port.
 *   `main.ts`: The main entry point of the application, responsible for dependency injection (wiring up adapters to ports) and starting the server.
 *   `deno.json`: Deno configuration file (tasks, import maps, linter/formatter settings).
 *   `deno.lock`: Lock file for ensuring reproducible builds by locking dependency versions.
