@@ -1,37 +1,29 @@
-import { Effect, Layer, Schema } from "effect"; // Removed Context, Data as they might not be needed directly
-import { assert, assertEquals } from "jsr:@std/assert"; // Corrected assert import
+import { Effect, Layer, Schema } from "effect";
+import { assert, assertEquals } from "jsr:@std/assert";
 import { describe, it } from "jsr:@std/testing/bdd";
 
-// Domain imports - assuming CatNotFound is exported from domain now
 import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 
-// Service and ACTUAL Repository Tag imports
-import { CatsService, CatsServiceLive } from "./CatsService.ts";
+// Service Port and Application Service imports
+import { CatsServicePort } from "./CatsServicePort.ts";
+import { CatsApplicationServiceLive } from "./CatsApplicationService.ts";
 import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
 
-// The mock implementation's type should ideally match the actual service interface provided by CatsRepositoryPort
-// This line assumes CatsRepositoryPort has an 'of' static method and its first parameter is the service impl
-// If CatsRepositoryPort is just a Tag<Interface>, this will need adjustment.
-// For now, let's define a similar structure to what CatsRepositoryPort.of might expect.
-
-// We'll use this Partial type for providing mocks.
+// We'll use this Partial type for providing mocks for the repository.
+type MockRepoPartial = Partial<CatsRepositoryPort["Type"]>;
 
 const runEffectTest = <E, A>(
-  effectToRun: Effect.Effect<A, E, CatsService>, // The effect needs CatsService
-  // UPDATE: Use Partial<CatsRepository["Type"]>
-  mockRepoPartialImpl: Partial<CatsRepositoryPort["Type"]> = {}, // Default to empty mock
+  effectToRun: Effect.Effect<A, E, CatsServicePort>, // The effect now needs CatsServicePort
+  mockRepoPartialImpl: MockRepoPartial = {}, // Default to empty mock
 ) => {
-  // Create a full mock implementation by merging partial mock with defaults that throw
-  // UPDATE: Use CatsRepository["Type"]
+  // Create a full mock implementation for the repository
   const fullMockImpl: CatsRepositoryPort["Type"] = {
     getAll: Effect.die("getAll not implemented in mock"),
     getById: (id: CatId) =>
       Effect.die(`getById(${id}) not implemented in mock`),
     create: (name: string, breed: string, age: number) =>
-      // Added types
       Effect.die(`create(${name}, ${breed}, ${age}) not implemented in mock`),
     update: (id: CatId, data: Partial<Omit<Cat, "id">>) =>
-      // Added types
       Effect.die(
         `update(${id}, ${JSON.stringify(data)}) not implemented in mock`,
       ),
@@ -39,27 +31,30 @@ const runEffectTest = <E, A>(
     ...mockRepoPartialImpl, // Override defaults with provided mocks
   };
 
-  // This is the critical part:
-  // It assumes CatsRepositoryPort is a Tag for a service that can be constructed with CatsRepositoryPort.of()
-  // or if CatsRepositoryPort is Tag<Interface>, then it should be CatsRepositoryPort (the Tag itself)
-  // and the second argument is the implementation (fullMockImpl).
-  // The instruction `CatsRepositoryPort.of(fullMockImpl)` implies CatsRepositoryPort is a class or object with `of`.
-  // Corrected to directly use fullMockImpl as CatsRepositoryPort is a Context.Tag
+  // Layer for the mock repository
   const mockCatsRepositoryLayer = Layer.succeed(
     CatsRepositoryPort,
-    CatsRepositoryPort.of(fullMockImpl), // Construct the service implementation
+    CatsRepositoryPort.of(fullMockImpl),
   );
 
-  const testLayer = Layer.provide(CatsServiceLive, mockCatsRepositoryLayer);
+  // Provide CatsApplicationServiceLive which depends on CatsRepositoryPort,
+  // and then provide the mock repository layer to CatsApplicationServiceLive.
+  // CatsApplicationServiceLive provides the implementation for CatsServicePort.
+  const testLayer = Layer.provide(
+    CatsApplicationServiceLive, // This provides CatsServicePort
+    mockCatsRepositoryLayer,    // This provides CatsRepositoryPort to CatsApplicationServiceLive
+  );
+
+  // Provide the testLayer (which includes the service and its mock dependency) to the effect to run.
   const providedEffect = Effect.provide(effectToRun, testLayer);
 
   return Effect.runPromise(providedEffect);
 };
 
-describe("CatsService (Refined)", () => {
+describe("CatsApplicationService (using CatsServicePort)", () => {
   it("getAllCats should return an empty array when repository is empty", async () => {
     const testEffect = Effect.gen(function* (_) {
-      const service = yield* _(CatsService);
+      const service = yield* _(CatsServicePort); // Use CatsServicePort
       const cats = yield* _(service.getAllCats);
       assertEquals(cats.length, 0);
     });
@@ -86,7 +81,7 @@ describe("CatsService (Refined)", () => {
     ];
 
     const testEffect = Effect.gen(function* (_) {
-      const service = yield* _(CatsService);
+      const service = yield* _(CatsServicePort); // Use CatsServicePort
       const cats = yield* _(service.getAllCats);
       assertEquals(cats, sampleCats);
     });
@@ -97,7 +92,7 @@ describe("CatsService (Refined)", () => {
   });
 
   it("getCatById should return a cat when found", async () => {
-    const catId = Schema.decodeUnknownSync(CatId)(3); // Using casting for CatId
+    const catId = Schema.decodeUnknownSync(CatId)(3);
     const sampleCat = new Cat({
       id: catId,
       name: "Felix",
@@ -106,7 +101,7 @@ describe("CatsService (Refined)", () => {
     });
 
     const testEffect = Effect.gen(function* (_) {
-      const service = yield* _(CatsService);
+      const service = yield* _(CatsServicePort); // Use CatsServicePort
       const cat = yield* _(service.getCatById(catId));
       assertEquals(cat, sampleCat);
     });
@@ -120,16 +115,15 @@ describe("CatsService (Refined)", () => {
   });
 
   it("getCatById should return CatNotFound error when cat is not found", async () => {
-    const nonExistentCatId = Schema.decodeUnknownSync(CatId)(99); // Using casting for CatId
+    const nonExistentCatId = Schema.decodeUnknownSync(CatId)(99);
 
     const testEffect = Effect.gen(function* (_) {
-      const service = yield* _(CatsService);
+      const service = yield* _(CatsServicePort); // Use CatsServicePort
       return yield* _(service.getCatById(nonExistentCatId));
     }).pipe(
       Effect.match({
         onFailure: (error) => {
           assertEquals(error._tag, "CatNotFound");
-          // Ensure CatNotFound has an 'id' property if this assertion is to pass
           if (error._tag === "CatNotFound") {
             assertEquals((error as CatNotFound).id, nonExistentCatId);
           } else {
@@ -149,7 +143,6 @@ describe("CatsService (Refined)", () => {
     );
 
     await runEffectTest(testEffect, {
-      // Ensure new CatNotFound({id: ...}) matches the actual error structure from the domain
       getById: (_id: CatId) =>
         Effect.fail(new CatNotFound({ id: nonExistentCatId })),
     });
