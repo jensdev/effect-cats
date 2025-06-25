@@ -1,13 +1,8 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
-import { Cat, CatIdFromString } from "./Cats.ts";
-
-export class CatNotFound extends Schema.TaggedError<CatNotFound>()(
-  "CatNotFound",
-  {
-    id: Schema.Number, // Refers to the ID by which cat was not found
-  },
-) {}
+import { Cat } from "../../domain/entities/cat.ts";
+import { CatIdFromString } from "../../domain/value-objects/cat.ts";
+import { CatNotFound } from "../../domain/errors/cat-not-found.ts";
 
 export const catsApiGroup = HttpApiGroup.make("cats")
   .add(HttpApiEndpoint.get("getAllCats", "/cats").addSuccess(Schema.Array(Cat)))

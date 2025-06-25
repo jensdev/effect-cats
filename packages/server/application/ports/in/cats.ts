@@ -1,5 +1,7 @@
-import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 import { Context, Effect } from "effect";
+import { CatId } from "../../../domain/value-objects/cat.ts";
+import { Cat } from "../../../domain/entities/cat.ts";
+import { CatNotFound } from "../../../domain/errors/cat-not-found.ts";
 
 export class CatsServicePort extends Context.Tag("Cats/Service")<
   CatsServicePort,

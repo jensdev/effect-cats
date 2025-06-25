@@ -1,7 +1,8 @@
-import { Cat, CatId } from "@effect-cats/domain";
 import { Effect, Layer } from "effect";
 import { CatsRepositoryPort } from "../ports/out/cat.repository.ts";
-import { CatsServicePort } from "../ports/in/cats.use-case.ts";
+import { CatsServicePort } from "../ports/in/cats.ts";
+import { CatId } from "../../domain/value-objects/cat.ts";
+import { Cat } from "../../domain/entities/cat.ts";
 
 export const CatsServiceLive = Layer.effect(
   CatsServicePort,

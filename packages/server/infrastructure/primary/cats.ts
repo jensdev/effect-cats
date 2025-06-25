@@ -1,10 +1,10 @@
 import { Effect } from "effect";
 import { HttpApiBuilder } from "@effect/platform";
-import { api } from "@effect-cats/domain";
-import { CatsServicePort } from "../../application/ports/in/cats.use-case.ts";
+import { CatsServicePort } from "../../application/ports/in/cats.ts";
+import { contract } from "./contract.ts";
 
 export const catsApiLiveGroup = HttpApiBuilder.group(
-  api,
+  contract,
   "cats",
   (handlers) =>
     Effect.gen(function* (_) {

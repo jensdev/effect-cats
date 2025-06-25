@@ -77,7 +77,7 @@ The server provides the API endpoints for managing cats.
      ```
    - For more direct control (from project root):
      ```bash
-     deno run -A --watch packages/server/src/main.ts
+     deno run -A --watch packages/server/main.ts
      ```
    The `-A` flag grants all necessary permissions (network, environment
    variables). The `--watch` flag enables auto-reload on file changes.

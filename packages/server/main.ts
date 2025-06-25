@@ -10,14 +10,15 @@ import { Config, Effect, Layer } from "effect";
 import { CatsRepositoryInMemoryLive } from "./infrastructure/secondary/cats.in-memory.ts";
 import { catsApiLiveGroup } from "./infrastructure/primary/cats.ts";
 import { healthApiLiveGroup } from "./infrastructure/primary/health.ts";
-import { api } from "@effect-cats/domain";
+
 import { CatsServiceLive } from "./application/services/cats.ts";
+import { contract } from "./infrastructure/primary/contract.ts";
 
 const AppLive = Layer.provide(
   CatsServiceLive,
   CatsRepositoryInMemoryLive,
 );
-const ApiLive = HttpApiBuilder.api(api).pipe(
+const ApiLive = HttpApiBuilder.api(contract).pipe(
   Layer.provide(catsApiLiveGroup),
   Layer.provide(healthApiLiveGroup),
 );

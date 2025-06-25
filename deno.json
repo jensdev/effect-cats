@@ -21,6 +21,6 @@
     "indentWidth": 2,
     "singleQuote": false
   },
-  "workspace": ["./packages/domain", "./packages/server", "./packages/cli"],
+  "workspace": [ "./packages/server", "./packages/cli"],
   "nodeModulesDir": "auto"
 }

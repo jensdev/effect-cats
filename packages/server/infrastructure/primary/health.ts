@@ -1,11 +1,11 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Effect } from "effect";
-import { api } from "@effect-cats/domain";
+import { contract } from "./contract.ts";
 
 const startTime = Date.now();
 
 export const healthApiLiveGroup = HttpApiBuilder.group(
-  api,
+  contract,
   "health",
   (handlers) =>
     handlers.handle("health", () =>
