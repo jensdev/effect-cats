@@ -1,0 +1,10 @@
+{
+  "extends": "./deno.json",
+  "compilerOptions": {"allowImportingTsExtensions":true,"noEmit": true,
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ]
+  }
+}
