@@ -7,6 +7,7 @@
     "jsr:@std/internal@^1.0.6": "1.0.8",
     "jsr:@std/internal@^1.0.8": "1.0.8",
     "jsr:@std/testing@*": "1.0.14",
+    "npm:@effect/language-service@0.23": "0.23.0",
     "npm:@effect/platform-node@~0.85.16": "0.85.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7",
     "npm:@effect/platform@~0.84.11": "0.84.11_effect@3.16.7",
     "npm:@types/node@*": "22.15.15",
@@ -88,6 +89,9 @@
         "effect",
         "uuid"
       ]
+    },
+    "@effect/language-service@0.23.0": {
+      "integrity": "sha512-S/ddox5TSqUI60q/kgWzU7Vavyj3CVN92KhMNxgIs41ECweA7ne3lj7vE7ywDQtP73k8JZg83wxJVHgI7d1mTg=="
     },
     "@effect/platform-node-shared@0.39.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7": {
       "integrity": "sha512-aJ7jVm9V+SEeNumRmHb+TxD0C38uv/1LLfBHB2Qg+xb5UjnZhak8SzwolAgSKkMNDFpAAdF2AlxZ1tO/HfhCiw==",
@@ -439,6 +443,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
+      "npm:@effect/language-service@0.23",
       "npm:@effect/platform-node@~0.85.16",
       "npm:@effect/platform@~0.84.11",
       "npm:effect@^3.16.7"
