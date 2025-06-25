@@ -438,25 +438,10 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1"
-    ],
-    "members": {
-      "packages/cli": {
-        "dependencies": [
-          "jsr:@std/assert@1",
-          "npm:@effect/platform-node@~0.85.16",
-          "npm:@effect/platform@~0.84.11",
-          "npm:effect@^3.16.7"
-        ]
-      },
-      "packages/server": {
-        "dependencies": [
-          "jsr:@std/assert@1",
-          "npm:@effect/platform-node@~0.85.16",
-          "npm:@effect/platform@~0.84.11",
-          "npm:effect@^3.16.7"
-        ]
-      }
-    }
+      "jsr:@std/assert@1",
+      "npm:@effect/platform-node@~0.85.16",
+      "npm:@effect/platform@~0.84.11",
+      "npm:effect@^3.16.7"
+    ]
   }
 }
