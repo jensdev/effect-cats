@@ -1,27 +1,10 @@
-import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
-import { Context, Effect, Layer } from "effect";
-import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
-
-export class CatsService extends Context.Tag("Cats/Service")<
-  CatsService,
-  {
-    readonly getAllCats: Effect.Effect<ReadonlyArray<Cat>, never>;
-    readonly getCatById: (id: CatId) => Effect.Effect<Cat, CatNotFound>;
-    readonly createCat: (
-      name: string,
-      breed: string,
-      age: number,
-    ) => Effect.Effect<Cat, never>;
-    readonly updateCat: (
-      id: CatId,
-      data: Partial<Omit<Cat, "id">>,
-    ) => Effect.Effect<Cat, CatNotFound>;
-    readonly deleteCat: (id: CatId) => Effect.Effect<void, CatNotFound>;
-  }
->() {}
+import { Cat, CatId } from "@effect-cats/domain";
+import { Effect, Layer } from "effect";
+import { CatsRepositoryPort } from "../ports/out/cat.repository.ts";
+import { CatsServicePort } from "../ports/in/cats.use-case.ts";
 
 export const CatsServiceLive = Layer.effect(
-  CatsService,
+  CatsServicePort,
   Effect.gen(function* (_) {
     const repository = yield* _(CatsRepositoryPort);
 

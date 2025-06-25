@@ -1,8 +1,8 @@
 import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 import { Array, Effect, Layer, Option } from "effect";
-import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
+import { CatsRepositoryPort } from "../../application/ports/out/cat.repository.ts";
 
-export const CatsRepositoryAdapterInMemoryLive = Layer.sync(
+export const CatsRepositoryInMemoryLive = Layer.sync(
   CatsRepositoryPort,
   () => {
     const catsStore: Map<number, Cat> = new Map();

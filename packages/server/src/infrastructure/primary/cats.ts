@@ -1,14 +1,14 @@
 import { Effect } from "effect";
-import { CatsService } from "./CatsService.ts";
 import { HttpApiBuilder } from "@effect/platform";
 import { api } from "@effect-cats/domain";
+import { CatsServicePort } from "../../application/ports/in/cats.use-case.ts";
 
 export const catsApiLiveGroup = HttpApiBuilder.group(
   api,
   "cats",
   (handlers) =>
     Effect.gen(function* (_) {
-      const catsService = yield* _(CatsService);
+      const catsService = yield* _(CatsServicePort);
       return handlers
         .handle("getAllCats", () => catsService.getAllCats)
         .handle("getCatById", ({ path: { id } }) => catsService.getCatById(id))

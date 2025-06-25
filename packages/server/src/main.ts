@@ -7,15 +7,15 @@ import {
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import { Config, Effect, Layer } from "effect";
 
-import { CatsServiceLive } from "./CatsService.ts";
-import { CatsRepositoryAdapterInMemoryLive } from "./CatsRepositoryAdapter.ts";
-import { catsApiLiveGroup } from "./CatsApiImpl.ts";
-import { healthApiLiveGroup } from "./HealthApiImpl.ts";
+import { CatsRepositoryInMemoryLive } from "./infrastructure/secondary/cats.in-memory.ts";
+import { catsApiLiveGroup } from "./infrastructure/primary/cats.ts";
+import { healthApiLiveGroup } from "./infrastructure/primary/health.ts";
 import { api } from "@effect-cats/domain";
+import { CatsServiceLive } from "./application/services/cats.ts";
 
 const AppLive = Layer.provide(
   CatsServiceLive,
-  CatsRepositoryAdapterInMemoryLive,
+  CatsRepositoryInMemoryLive,
 );
 const ApiLive = HttpApiBuilder.api(api).pipe(
   Layer.provide(catsApiLiveGroup),
