@@ -7,18 +7,16 @@ import {
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import { Config, Effect, Layer } from "effect";
 
-import { CatsServiceLive } from "./CatsService.ts"; // Import CatsServiceLive
+import { CatsServiceLive } from "./CatsService.ts";
 import { CatsRepositoryAdapterInMemoryLive } from "./CatsRepositoryAdapter.ts";
 import { catsApiLiveGroup } from "./CatsApiImpl.ts";
 import { healthApiLiveGroup } from "./HealthApiImpl.ts";
 import { api } from "@effect-cats/domain";
 
-// Create a combined layer for the application services
 const AppLive = Layer.provide(
   CatsServiceLive,
   CatsRepositoryAdapterInMemoryLive,
 );
-// This will be the main export for the server to build the API
 const ApiLive = HttpApiBuilder.api(api).pipe(
   Layer.provide(catsApiLiveGroup),
   Layer.provide(healthApiLiveGroup),

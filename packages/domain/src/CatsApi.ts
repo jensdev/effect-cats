@@ -1,8 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
-import { Cat, CatIdFromString } from "./Cats.ts"; // Import Cat and CatIdFromString
-
-// CatId and Cat class are now imported from ./cats.ts
+import { Cat, CatIdFromString } from "./Cats.ts";
 
 export class CatNotFound extends Schema.TaggedError<CatNotFound>()(
   "CatNotFound",
