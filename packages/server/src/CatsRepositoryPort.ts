@@ -1,7 +1,6 @@
 import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
-import {  Context, Effect } from "effect";
+import { Context, Effect } from "effect";
 
-// Create a context tag for the repository
 export class CatsRepositoryPort extends Context.Tag("Cats/Repository")<
   CatsRepositoryPort,
   {

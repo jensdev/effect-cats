@@ -2,7 +2,6 @@ import { Cat, CatId, CatNotFound } from "@effect-cats/domain";
 import { Context, Effect, Layer } from "effect";
 import { CatsRepositoryPort } from "./CatsRepositoryPort.ts";
 
-// Define the interface for our service
 export class CatsService extends Context.Tag("Cats/Service")<
   CatsService,
   {
@@ -21,7 +20,6 @@ export class CatsService extends Context.Tag("Cats/Service")<
   }
 >() {}
 
-// Implement the service
 export const CatsServiceLive = Layer.effect(
   CatsService,
   Effect.gen(function* (_) {

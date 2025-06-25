@@ -1,7 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 
-// Health check schema
 export const HealthStatus = Schema.Struct({
   status: Schema.Literal("ok"),
   timestamp: Schema.Number,
