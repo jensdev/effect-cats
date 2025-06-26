@@ -15,7 +15,9 @@ export const catsApiGroup = HttpApiGroup.make("cats")
   .add(
     HttpApiEndpoint.post("createCat", "/cats")
       .addSuccess(Cat)
-      .setPayload(Schema.Struct(Cat.fields).pipe(Schema.omit("id"))),
+      .setPayload(
+        Schema.Struct(Cat.fields).pipe(Schema.omit("id")),
+      ),
   )
   .add(
     HttpApiEndpoint.patch("updateCat", "/cats/:id")

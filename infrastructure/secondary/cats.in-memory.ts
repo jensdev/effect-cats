@@ -23,10 +23,10 @@ export const CatsRepositoryInMemoryLive = Layer.sync(
             attributes: { "cat.id": id },
           }),
         ),
-      create: (name: string, breed: string, age: number) =>
+      create: (name: string, breed: string, birthDate: Date) =>
         Effect.sync(() => {
           const id = getNextId();
-          const newCat = new Cat({ id, name, breed, age });
+          const newCat = new Cat({ id, name, breed, birthDate });
           catsStore.set(id, newCat);
           return newCat;
         }).pipe(
@@ -34,11 +34,11 @@ export const CatsRepositoryInMemoryLive = Layer.sync(
             attributes: {
               "cat.name": name,
               "cat.breed": breed,
-              "cat.age": age,
+              "cat.birthDate": birthDate.toISOString(),
             },
           }),
         ),
-      update: (id: CatId, data: Partial<Omit<Cat, "id">>) =>
+      update: (id: CatId, data: Partial<Omit<Cat, "id" | "age">>) =>
         Effect.gen(function* (_) {
           const cat = yield* _(
             Option.fromNullable(catsStore.get(id)),

@@ -27,9 +27,9 @@ export const CatsServiceLive = Layer.effect(
             attributes: { "cat.id": id },
           }),
         ),
-      createCat: (name: string, breed: string, age: number) =>
+      createCat: (name: string, breed: string, birthDate: Date) =>
         Effect.logDebug(`createCat called with name: ${name}`).pipe(
-          Effect.flatMap(() => repository.create(name, breed, age)),
+          Effect.flatMap(() => repository.create(name, breed, birthDate)),
           Effect.tap((cat) =>
             Effect.logInfo(`Created cat: ${cat.name} with id: ${cat.id}`)
           ),
@@ -37,11 +37,11 @@ export const CatsServiceLive = Layer.effect(
             attributes: {
               "cat.name": name,
               "cat.breed": breed,
-              "cat.age": age,
+              "cat.birthDate": birthDate.toISOString(),
             },
           }),
         ),
-      updateCat: (id: CatId, data: Partial<Omit<Cat, "id">>) =>
+      updateCat: (id: CatId, data: Partial<Omit<Cat, "id" | "age">>) =>
         Effect.logDebug(`updateCat called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.update(id, data)),
           Effect.tap((cat) => Effect.logInfo(`Updated cat: ${cat.name}`)),
