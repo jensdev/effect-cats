@@ -20,18 +20,21 @@ export class Cat extends Schema.Class<Cat>("Cat")({
     }),
     Schema.annotations({
       description: "The birth date of the cat",
-      examples: ["2022-01-01T00:00:00.000Z"],
+      examples: [new Date("2022-01-01T00:00:00.000Z")],
     }),
   ),
 }) {
   get age() {
-    const today = new Date();
-    const birthDate = new Date(this.birthDate);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const today = new Date(); // This will be controlled by TestClock in tests
+    const birthDate = this.birthDate; // this.birthDate is a Date object
+
+    // Use UTC methods for all component extractions to ensure consistency
+    let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
+    const monthDiff = today.getUTCMonth() - birthDate.getUTCMonth();
+
     if (
       monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      (monthDiff === 0 && today.getUTCDate() < birthDate.getUTCDate())
     ) {
       age--;
     }
