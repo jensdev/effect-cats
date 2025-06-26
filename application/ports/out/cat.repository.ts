@@ -11,11 +11,11 @@ export class CatsRepositoryPort extends Context.Tag("Cats/Repository")<
     readonly create: (
       name: string,
       breed: string,
-      age: number,
+      birthDate: Date,
     ) => Effect.Effect<Cat, never>;
     readonly update: (
       id: CatId,
-      data: Partial<Omit<Cat, "id">>,
+      data: Partial<Omit<Cat, "id" | "age">>,
     ) => Effect.Effect<Cat, CatNotFound>;
     readonly remove: (id: CatId) => Effect.Effect<void, CatNotFound>;
   }

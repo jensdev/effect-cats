@@ -14,12 +14,27 @@ export class Cat extends Schema.Class<Cat>("Cat")({
     // MODIFIED LINE:
     examples: ["Siamese", "Persian", "Maine Coon"],
   }),
-  age: Schema.Number.pipe(
-    Schema.int(),
-    Schema.nonNegative(),
+  birthDate: Schema.Date.pipe(
+    Schema.lessThanDate(new Date(), {
+      message: () => "Birth date must be in the past",
+    }),
     Schema.annotations({
-      description: "The age of the cat",
-      examples: [0, 2, 5],
+      description: "The birth date of the cat",
+      examples: ["2022-01-01T00:00:00.000Z"],
     }),
   ),
-}) {}
+}) {
+  get age() {
+    const today = new Date();
+    const birthDate = new Date(this.birthDate);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  }
+}
