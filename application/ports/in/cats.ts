@@ -11,7 +11,7 @@ export class CatsServicePort extends Context.Tag("Cats/Service")<
     readonly createCat: (
       name: string,
       breed: string,
-      age: number,
+      birthDate: Date,
     ) => Effect.Effect<Cat, never>;
     readonly updateCat: (
       id: CatId,
