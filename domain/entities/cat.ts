@@ -24,9 +24,13 @@ export class Cat extends Schema.Class<Cat>("Cat")({
     }),
   ),
 }) {
-  get age() {
-    const today = new Date(); // This will be controlled by TestClock in tests
+  getAgeAt(date: Date): number {
+    const today = date; // This will be controlled by TestClock in tests
     const birthDate = this.birthDate; // this.birthDate is a Date object
+
+    if (today.getTime() < birthDate.getTime()) {
+      return 0;
+    }
 
     // Use UTC methods for all component extractions to ensure consistency
     let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
@@ -39,5 +43,9 @@ export class Cat extends Schema.Class<Cat>("Cat")({
       age--;
     }
     return age;
+  }
+
+  get age(): number {
+    return this.getAgeAt(new Date());
   }
 }
