@@ -11,7 +11,6 @@ export class Cat extends Schema.Class<Cat>("Cat")({
   }),
   breed: Schema.NonEmptyTrimmedString.annotations({
     description: "The breed of the cat.",
-    // MODIFIED LINE:
     examples: ["Siamese", "Persian", "Maine Coon"],
   }),
   birthDate: Schema.Date.pipe(
@@ -25,14 +24,13 @@ export class Cat extends Schema.Class<Cat>("Cat")({
   ),
 }) {
   getAgeAt(date: Date): number {
-    const today = date; // This will be controlled by TestClock in tests
-    const birthDate = this.birthDate; // this.birthDate is a Date object
+    const today = date;
+    const birthDate = this.birthDate;
 
     if (today.getTime() < birthDate.getTime()) {
       return 0;
     }
 
-    // Use UTC methods for all component extractions to ensure consistency
     let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
     const monthDiff = today.getUTCMonth() - birthDate.getUTCMonth();
 

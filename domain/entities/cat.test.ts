@@ -35,9 +35,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat whose birthday has passed this year", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // TestClock methods are static on the TestClock module when TestContext is provided
-          // yield* _(TestClock.setTime(commonTestDate.getTime())); // No longer strictly needed for getAgeAt if date is passed directly
-
           const birthDate = new Date("2021-05-10T00:00:00.000Z"); // May 10, 2021
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(2);
@@ -47,8 +44,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat whose birthday is yet to come this year", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2021-08-20T00:00:00.000Z"); // August 20, 2021
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(1);
@@ -58,8 +53,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat whose birthday is today", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2020-06-15T00:00:00.000Z"); // June 15, 2020
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(3);
@@ -70,7 +63,6 @@ describe("Cat Entity", () => {
       runTestEffect(
         Effect.gen(function* (_) {
           const testDate = new Date("2023-02-28T10:00:00.000Z");
-          // yield* _(TestClock.setTime(testDate.getTime()));
 
           const birthDate = new Date("2020-02-29T00:00:00.000Z"); // Born Feb 29, 2020
           const cat = createTestCatObject(birthDate);
@@ -82,7 +74,6 @@ describe("Cat Entity", () => {
       runTestEffect(
         Effect.gen(function* (_) {
           const testDate = new Date("2023-03-01T10:00:00.000Z");
-          // yield* _(TestClock.setTime(testDate.getTime()));
 
           const birthDate = new Date("2020-02-29T00:00:00.000Z"); // Born Feb 29, 2020
           const cat = createTestCatObject(birthDate);
@@ -94,7 +85,6 @@ describe("Cat Entity", () => {
       runTestEffect(
         Effect.gen(function* (_) {
           const testDate = new Date("2024-02-29T10:00:00.000Z");
-          // yield* _(TestClock.setTime(testDate.getTime()));
 
           const birthDate = new Date("2020-02-29T00:00:00.000Z"); // Born Feb 29, 2020
           const cat = createTestCatObject(birthDate);
@@ -105,8 +95,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat less than a year old", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2023-01-10T00:00:00.000Z"); // Jan 10, 2023
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(0);
@@ -116,8 +104,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat that is exactly one year old (birthday passed)", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2022-05-10T00:00:00.000Z"); // May 10, 2022
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(1);
@@ -127,8 +113,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat that is exactly one year old (birthday today)", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2022-06-15T00:00:00.000Z"); // June 15, 2022
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(1);
@@ -138,8 +122,6 @@ describe("Cat Entity", () => {
     it("should correctly calculate age for a cat whose birthday is tomorrow", () =>
       runTestEffect(
         Effect.gen(function* (_) {
-          // yield* _(TestClock.setTime(commonTestDate.getTime()));
-
           const birthDate = new Date("2022-06-16T00:00:00.000Z"); // June 16, 2022
           const cat = createTestCatObject(birthDate);
           expect(cat.getAgeAt(commonTestDate)).toBe(0);
@@ -150,7 +132,6 @@ describe("Cat Entity", () => {
       runTestEffect(
         Effect.gen(function* (_) {
           const testDate = new Date("2023-01-01T10:00:00.000Z");
-          // yield* _(TestClock.setTime(testDate.getTime()));
 
           const birthDate = new Date("2022-12-31T00:00:00.000Z"); // Dec 31, 2022
           const cat = createTestCatObject(birthDate);
@@ -162,7 +143,6 @@ describe("Cat Entity", () => {
       runTestEffect(
         Effect.gen(function* (_) {
           const testDate = new Date("2023-12-31T10:00:00.000Z");
-          // yield* _(TestClock.setTime(testDate.getTime()));
 
           const birthDate = new Date("2023-01-01T00:00:00.000Z"); // Jan 1, 2023
           const cat = createTestCatObject(birthDate);
@@ -170,7 +150,6 @@ describe("Cat Entity", () => {
         }),
       ));
 
-    // New test cases
     it("should return 0 if the target date is before the cat's birth date", () =>
       runTestEffect(
         Effect.gen(function* (_) {
