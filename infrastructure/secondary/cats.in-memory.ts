@@ -13,55 +13,42 @@ export const CatsRepositoryInMemoryLive = Layer.sync(
     const getNextId = (): CatId => CatId.make(nextId++);
 
     return {
-      getAll: Effect.sync(() => Array.fromIterable(catsStore.values())).pipe(
-        Effect.withSpan("CatsRepository/getAll"),
+      getAll: Effect.fn("CatsRepository/getAll")(
+        Effect.sync(() => Array.fromIterable(catsStore.values())),
       ),
-      getById: (id: CatId) =>
+      getById: Effect.fn("CatsRepository/getById")((id: CatId) =>
         Option.fromNullable(catsStore.get(id)).pipe(
           Effect.mapError(() => new CatNotFound({ id })),
-          Effect.withSpan("CatsRepository/getById", {
-            attributes: { "cat.id": id },
+        )
+      ),
+      create: Effect.fn("CatsRepository/create")(
+        (name: string, breed: string, birthDate: Date) =>
+          Effect.sync(() => {
+            const id = getNextId();
+            const newCat = new Cat({ id, name, breed, birthDate });
+            catsStore.set(id, newCat);
+            return newCat;
           }),
-        ),
-      create: (name: string, breed: string, birthDate: Date) =>
-        Effect.sync(() => {
-          const id = getNextId();
-          const newCat = new Cat({ id, name, breed, birthDate });
-          catsStore.set(id, newCat);
-          return newCat;
-        }).pipe(
-          Effect.withSpan("CatsRepository/create", {
-            attributes: {
-              "cat.name": name,
-              "cat.breed": breed,
-              "cat.birthDate": birthDate.toISOString(),
-            },
+      ),
+      update: Effect.fn("CatsRepository/update")(
+        (id: CatId, data: Partial<Omit<Cat, "id" | "age">>) =>
+          Effect.gen(function* (_) {
+            const cat = yield* _(
+              Option.fromNullable(catsStore.get(id)),
+              Effect.mapError(() => new CatNotFound({ id })),
+            );
+            // Ensure the original cat ID is preserved, only other fields are updated.
+            const updatedCat = new Cat({ ...cat, ...data, id: cat.id });
+            catsStore.set(id, updatedCat);
+            return updatedCat;
           }),
-        ),
-      update: (id: CatId, data: Partial<Omit<Cat, "id" | "age">>) =>
-        Effect.gen(function* (_) {
-          const cat = yield* _(
-            Option.fromNullable(catsStore.get(id)),
-            Effect.mapError(() => new CatNotFound({ id })),
-          );
-          // Ensure the original cat ID is preserved, only other fields are updated.
-          const updatedCat = new Cat({ ...cat, ...data, id: cat.id });
-          catsStore.set(id, updatedCat);
-          return updatedCat;
-        }).pipe(
-          Effect.withSpan("CatsRepository/update", {
-            attributes: { "cat.id": id },
-          }),
-        ),
-      remove: (id: CatId) =>
+      ),
+      remove: Effect.fn("CatsRepository/remove")((id: CatId) =>
         Effect.if(catsStore.has(id), {
           onTrue: () => Effect.sync(() => void catsStore.delete(id)),
           onFalse: () => Effect.fail(new CatNotFound({ id })),
-        }).pipe(
-          Effect.withSpan("CatsRepository/remove", {
-            attributes: { "cat.id": id },
-          }),
-        ),
+        })
+      ),
     };
   },
 );
