@@ -1,4 +1,4 @@
-import { createServer } from "node:http";
+import * as NHttp from "node:http";
 import {
   HttpApiBuilder,
   HttpApiSwagger,
@@ -31,7 +31,7 @@ const HttpLive = Effect.gen(function* (_) {
     Layer.provide(HttpApiSwagger.layer()),
     Layer.provide(ApiLive),
     Layer.provide(AppLive),
-    Layer.provide(NodeHttpServer.layer(createServer, { port })),
+    Layer.provide(NodeHttpServer.layer(NHttp.createServer, { port })),
   );
 }).pipe(Layer.unwrapEffect);
 
