@@ -28,10 +28,10 @@ describe("Cat Entity", () => {
     const commonTestDate = new Date("2023-06-15T10:00:00.000Z");
 
     it("should fail to create a cat with a birthDate in the future", () => {
-      // Attempts to create a cat with a birth date set to one day after commonTestDate.
+      // Attempts to create a cat with a birth date set to one hundred years after commonTestDate.
       const futureBirthDate = new Date(
         commonTestDate.getTime() + 100 * 365 * 24 * 60 * 60 * 1000,
-      ); // commonTestDate + 1 day
+      ); // commonTestDate + 100 years
       const catData = {
         id: 2 as CatId,
         name: "Future Cat",
@@ -39,10 +39,12 @@ describe("Cat Entity", () => {
         birthDate: futureBirthDate.toISOString(),
       };
 
-      const result = Effect.runSync(Effect.either(Schema.decodeUnknown(Cat)(catData)))
+      const result = Effect.runSync(
+        Effect.either(Schema.decodeUnknown(Cat)(catData)),
+      );
       expect(Either.isLeft(result)).toBe(true);
       if (Either.isLeft(result)) {
-        // Further check if the error message is as expected for a birth date in the past.
+        // Further check if the error message is as expected for a birth date in the future.
         // This depends on the exact error message defined in the Cat schema.
         expect(result.left.message).toContain("Birth date must be in the past");
       }

@@ -72,41 +72,50 @@ This project follows a hexagonal architecture pattern:
 
 # Effect-TS Patterns Overview
 
-This project uses [Effect-TS](https://effect.website) for functional programming with typed errors, dependency injection, and resource management. The following patterns are consistently used throughout the codebase.
+This project uses [Effect-TS](https://effect.website) for functional programming
+with typed errors, dependency injection, and resource management. The following
+patterns are consistently used throughout the codebase.
 
 ## Core Patterns
 
 ### 1. **Data.TaggedError** - Typed Error Handling
+
 - See: #Effect TaggedError Pattern
 - Use for creating typed error classes with structured error information
 - Consistent naming: end with "Error", include relevant context
 
 ### 2. **Effect.Service** - Dependency Injection
+
 - See: #Effect Service Pattern
 - Use for creating reusable, injectable services
 - Encapsulate related functionality with proper dependency management
 
 ### 3. **Effect.fn & Effect.gen** - Effectful Functions
+
 - See: #Effect Functions and Generators
 - `Effect.fn` for named Effect functions with tracing
 - `Effect.gen` for generator-style effectful code
 
 ### 4. **Layer** - Dependency Composition
+
 - See: #Effect Layer Pattern
 - Use `Layer.mergeAll()` to compose application dependencies
 - Prefer `Service.Default` layers over manual creation
 
 ### 5. **Error Handling** - Robust Error Management
+
 - See: #Effect Error Handling Patterns
 - Use `Effect.mapError`, `Effect.either`, `Effect.catchTag`
 - Transform external errors to tagged errors at boundaries
 
 ### 6. **Config** - Type-Safe Configuration
+
 - See: #Effect Configuration Patterns
 - Use `Config.string()`, `Config.number()`, etc. for environment variables
 - Use `Config.redacted()` for sensitive values
 
 ### 7. **Workflows** - Business Logic Orchestration
+
 - See: #Effect Workflow Patterns
 - Orchestrate multiple services for complex business logic
 - Use `Effect.gen` to coordinate between services
@@ -114,7 +123,7 @@ This project uses [Effect-TS](https://effect.website) for functional programming
 ## Common Imports
 
 ```typescript
-import { Data, Effect, Config, Layer } from "effect";
+import { Config, Data, Effect, Layer } from "effect";
 import { FileSystem } from "@effect/platform";
 import { NodeFileSystem } from "@effect/platform-node";
 ```
@@ -149,7 +158,7 @@ const workflow = Effect.gen(function* () {
 
   // Perform operations with error handling
   const result = yield* service.doSomething(config).pipe(
-    Effect.mapError((e) => new WorkflowError({ cause: e }))
+    Effect.mapError((e) => new WorkflowError({ cause: e })),
   );
 
   return result;
@@ -164,7 +173,6 @@ export const AppLayerLive = Layer.mergeAll(
   ServiceA.Default,
   ServiceB.Default,
   ServiceC.Default,
-
   // Platform layers
   NodeFileSystem.layer,
 );
@@ -175,7 +183,7 @@ export const AppLayerLive = Layer.mergeAll(
 ```typescript
 // In main application
 Effect.runPromise(
-  myWorkflow().pipe(Effect.provide(AppLayerLive))
+  myWorkflow().pipe(Effect.provide(AppLayerLive)),
 );
 ```
 
@@ -217,7 +225,7 @@ const workflow = Effect.gen(function* () {
 
   // String with default value
   const environment = yield* Config.string("NODE_ENV").pipe(
-    Config.withDefault("development")
+    Config.withDefault("development"),
   );
 
   return { apiUrl, environment };
@@ -233,7 +241,7 @@ const numericConfig = Effect.gen(function* () {
 
   // Number with default
   const timeout = yield* Config.number("TIMEOUT").pipe(
-    Config.withDefault(5000)
+    Config.withDefault(5000),
   );
 
   // Number with validation
@@ -241,8 +249,8 @@ const numericConfig = Effect.gen(function* () {
     Config.withDefault(4),
     Config.validate({
       message: "Worker count must be between 1 and 16",
-      validation: (n) => n >= 1 && n <= 16
-    })
+      validation: (n) => n >= 1 && n <= 16,
+    }),
   );
 
   return { port, timeout, workers };
@@ -255,7 +263,7 @@ const numericConfig = Effect.gen(function* () {
 const booleanConfig = Effect.gen(function* () {
   // Boolean configuration
   const debugMode = yield* Config.boolean("DEBUG_MODE").pipe(
-    Config.withDefault(false)
+    Config.withDefault(false),
   );
 
   const enableFeature = yield* Config.boolean("ENABLE_FEATURE");
@@ -293,10 +301,10 @@ export class ConfigurableService extends Effect.Service<ConfigurableService>()(
       // Load configuration during service initialization
       const baseUrl = yield* Config.string("API_BASE_URL");
       const timeout = yield* Config.number("API_TIMEOUT").pipe(
-        Config.withDefault(10000)
+        Config.withDefault(10000),
       );
       const retries = yield* Config.number("API_RETRIES").pipe(
-        Config.withDefault(3)
+        Config.withDefault(3),
       );
 
       return {
@@ -307,7 +315,7 @@ export class ConfigurableService extends Effect.Service<ConfigurableService>()(
         }),
       };
     }),
-  }
+  },
 ) {}
 ```
 
@@ -319,8 +327,8 @@ const validatedConfig = Effect.gen(function* () {
   const port = yield* Config.number("PORT").pipe(
     Config.validate({
       message: "Port must be between 1000 and 65535",
-      validation: (port) => port >= 1000 && port <= 65535
-    })
+      validation: (port) => port >= 1000 && port <= 65535,
+    }),
   );
 
   // URL validation
@@ -334,8 +342,8 @@ const validatedConfig = Effect.gen(function* () {
         } catch {
           return false;
         }
-      }
-    })
+      },
+    }),
   );
 
   return { port, apiUrl };
@@ -348,14 +356,14 @@ const validatedConfig = Effect.gen(function* () {
 const arrayConfig = Effect.gen(function* () {
   // Comma-separated values
   const allowedOrigins = yield* Config.string("ALLOWED_ORIGINS").pipe(
-    Config.map((str) => str.split(",").map(s => s.trim())),
-    Config.withDefault([])
+    Config.map((str) => str.split(",").map((s) => s.trim())),
+    Config.withDefault([]),
   );
 
   // JSON array configuration
   const features = yield* Config.string("ENABLED_FEATURES").pipe(
     Config.map((str) => JSON.parse(str) as string[]),
-    Config.withDefault([])
+    Config.withDefault([]),
   );
 
   return { allowedOrigins, features };
@@ -377,10 +385,10 @@ const complexConfig = Effect.gen(function* () {
 
   const redisConfig = {
     host: yield* Config.string("REDIS_HOST").pipe(
-      Config.withDefault("localhost")
+      Config.withDefault("localhost"),
     ),
     port: yield* Config.number("REDIS_PORT").pipe(
-      Config.withDefault(6379)
+      Config.withDefault(6379),
     ),
   };
 
@@ -393,16 +401,16 @@ const complexConfig = Effect.gen(function* () {
 ```typescript
 const environmentConfig = Effect.gen(function* () {
   const env = yield* Config.string("NODE_ENV").pipe(
-    Config.withDefault("development")
+    Config.withDefault("development"),
   );
 
   // Different configs based on environment
   const logLevel = yield* Config.string("LOG_LEVEL").pipe(
-    Config.withDefault(env === "production" ? "info" : "debug")
+    Config.withDefault(env === "production" ? "info" : "debug"),
   );
 
   const enableMetrics = yield* Config.boolean("ENABLE_METRICS").pipe(
-    Config.withDefault(env === "production")
+    Config.withDefault(env === "production"),
   );
 
   return { env, logLevel, enableMetrics };
@@ -421,9 +429,9 @@ const safeConfig = Effect.gen(function* () {
     Effect.mapError((configError) =>
       new ConfigurationError({
         message: "Failed to load configuration",
-        cause: configError
+        cause: configError,
       })
-    )
+    ),
   );
 
   return config;
@@ -444,7 +452,7 @@ const CONFIG_KEYS = {
 const typedConfig = Effect.gen(function* () {
   const apiUrl = yield* Config.string(CONFIG_KEYS.API_URL);
   const timeout = yield* Config.number(CONFIG_KEYS.API_TIMEOUT).pipe(
-    Config.withDefault(10000)
+    Config.withDefault(10000),
   );
 
   return { apiUrl, timeout };
@@ -457,19 +465,21 @@ const typedConfig = Effect.gen(function* () {
 // Test configuration layer
 const TestConfigLayer = Layer.succeed(
   Config.Tag,
-  Config.make(new Map([
-    ["API_URL", "http://localhost:3000"],
-    ["TIMEOUT", "1000"],
-    ["DEBUG_MODE", "true"],
-  ]))
+  Config.make(
+    new Map([
+      ["API_URL", "http://localhost:3000"],
+      ["TIMEOUT", "1000"],
+      ["DEBUG_MODE", "true"],
+    ]),
+  ),
 );
 
 // Use in tests
 test("should work with test config", async () => {
   const result = await Effect.runPromise(
     myConfigurableFunction().pipe(
-      Effect.provide(TestConfigLayer)
-    )
+      Effect.provide(TestConfigLayer),
+    ),
   );
 
   expect(result).toBe("expected");
@@ -494,9 +504,9 @@ test("should work with test config", async () => {
 Use `Effect.mapError` to transform errors into your own tagged error types:
 
 ```typescript
-yield* Effect.tryPromise(() => someAsyncOperation())
+yield * Effect.tryPromise(() => someAsyncOperation())
   .pipe(
-    Effect.mapError((e) => new MyOperationError({ cause: e }))
+    Effect.mapError((e) => new MyOperationError({ cause: e })),
   );
 ```
 
@@ -505,10 +515,10 @@ yield* Effect.tryPromise(() => someAsyncOperation())
 Use `Effect.either` to convert failures into successful Either values:
 
 ```typescript
-const result = yield* riskyOperation().pipe(Effect.either);
+const result = yield * riskyOperation().pipe(Effect.either);
 
 if (Either.isLeft(result)) {
-  yield* Effect.logError("Operation failed", result.left);
+  yield * Effect.logError("Operation failed", result.left);
   // Handle error
 } else {
   // Use result.right
@@ -526,7 +536,7 @@ const recoveredOperation = riskyOperation().pipe(
     } else {
       return Effect.fail(error); // Re-throw non-retryable errors
     }
-  })
+  }),
 );
 ```
 
@@ -535,13 +545,13 @@ const recoveredOperation = riskyOperation().pipe(
 ```typescript
 const handleSpecificErrors = operation().pipe(
   Effect.catchTag("NetworkError", (error) => {
-    yield* Effect.logWarning("Network error, retrying...");
+    yield * Effect.logWarning("Network error, retrying...");
     return retryWithBackoff();
   }),
   Effect.catchTag("ValidationError", (error) => {
-    yield* Effect.logError("Validation failed", { error });
+    yield * Effect.logError("Validation failed", { error });
     return Effect.fail(new WorkflowError({ cause: error }));
-  })
+  }),
 );
 ```
 
@@ -551,15 +561,15 @@ const handleSpecificErrors = operation().pipe(
 const workflow = Effect.gen(function* () {
   // These operations can fail and errors will propagate automatically
   const config = yield* loadConfig().pipe(
-    Effect.mapError((e) => new ConfigLoadError({ cause: e }))
+    Effect.mapError((e) => new ConfigLoadError({ cause: e })),
   );
 
   const data = yield* fetchData(config).pipe(
-    Effect.mapError((e) => new DataFetchError({ cause: e }))
+    Effect.mapError((e) => new DataFetchError({ cause: e })),
   );
 
   const processed = yield* processData(data).pipe(
-    Effect.mapError((e) => new ProcessingError({ cause: e }))
+    Effect.mapError((e) => new ProcessingError({ cause: e })),
   );
 
   return processed;
@@ -574,10 +584,10 @@ import { Schedule } from "effect";
 const retriedOperation = riskyOperation().pipe(
   Effect.retry(
     Schedule.exponential("100 millis").pipe(
-      Schedule.compose(Schedule.recurs(3)) // Retry up to 3 times
-    )
+      Schedule.compose(Schedule.recurs(3)), // Retry up to 3 times
+    ),
   ),
-  Effect.mapError((e) => new MaxRetriesExceededError({ cause: e }))
+  Effect.mapError((e) => new MaxRetriesExceededError({ cause: e })),
 );
 ```
 
@@ -588,7 +598,7 @@ const safeResourceOperation = Effect.gen(function* () {
   const resource = yield* acquireResource();
 
   const result = yield* useResource(resource).pipe(
-    Effect.mapError((e) => new ResourceUsageError({ cause: e }))
+    Effect.mapError((e) => new ResourceUsageError({ cause: e })),
   );
 
   return result;
@@ -598,35 +608,36 @@ const safeResourceOperation = Effect.gen(function* () {
       Effect.catchAll((e) => {
         // Log cleanup errors but don't fail the main operation
         return Effect.logError("Failed to cleanup resource", e);
-      })
-    )
-  )
+      }),
+    ),
+  ),
 );
 ```
 
 ## Validation with Effect.fail
 
 ```typescript
-const validateInput = (input: unknown) => Effect.gen(function* () {
-  if (typeof input !== "string") {
-    return yield* Effect.fail(
-      new ValidationError({
-        message: "Input must be a string",
-        received: typeof input
-      })
-    );
-  }
+const validateInput = (input: unknown) =>
+  Effect.gen(function* () {
+    if (typeof input !== "string") {
+      return yield* Effect.fail(
+        new ValidationError({
+          message: "Input must be a string",
+          received: typeof input,
+        }),
+      );
+    }
 
-  if (input.length === 0) {
-    return yield* Effect.fail(
-      new ValidationError({
-        message: "Input cannot be empty"
-      })
-    );
-  }
+    if (input.length === 0) {
+      return yield* Effect.fail(
+        new ValidationError({
+          message: "Input cannot be empty",
+        }),
+      );
+    }
 
-  return input;
-});
+    return input;
+  });
 ```
 
 ## Error Aggregation in Parallel Operations
@@ -689,7 +700,7 @@ e", {
 // Test that specific errors are thrown
 test("should handle validation errors", async () => {
   const result = await Effect.runPromise(
-    validateInput("").pipe(Effect.either)
+    validateInput("").pipe(Effect.either),
   );
 
   expect(Either.isLeft(result)).toBe(true);
@@ -705,7 +716,7 @@ test("should handle validation errors", async () => {
 2. **Transform at Boundaries**: Use `mapError` to transform external errors
 3. **Handle Specifically**: Use `catchTag` for specific error handling
 4. **Log Appropriately**: Log errors at appropriate levels (error, warning, debu
-g)
+   g)
 5. **Cleanup Resources**: Use `ensuring` for resource cleanup
 6. **Validate Early**: Validate inputs early and fail fast
 7. **Provide Context**: Include relevant context in error objects
@@ -716,7 +727,7 @@ g)
 ## Effect.fn Pattern
 
 Use `Effect.fn` to create named Effect functions that provide better tracing and
- debugging capabilities.
+debugging capabilities.
 
 ### Basic Effect.fn Usage
 
@@ -742,10 +753,11 @@ export class DataService extends Effect.Service<DataService>()("DataService", {
         return processed;
       }),
 
-      saveResult: Effect.fn("saveResult")(function* (data: any, output: string)
-{
-        yield* fs.writeFileString(output, JSON.stringify(data));
-      }),
+      saveResult: Effect.fn("saveResult")(
+        function* (data: any, output: string) {
+          yield* fs.writeFileString(output, JSON.stringify(data));
+        },
+      ),
     };
   }),
 }) {}
@@ -754,7 +766,7 @@ export class DataService extends Effect.Service<DataService>()("DataService", {
 ## Effect.gen Pattern
 
 Use `Effect.gen` for writing effectful code in a generator style that allows for
- clean, sequential-looking asynchronous code.
+clean, sequential-looking asynchronous code.
 
 ### Basic Effect.gen
 
@@ -775,7 +787,7 @@ const workflow = Effect.gen(function* () {
 ```typescript
 const safeWorkflow = Effect.gen(function* () {
   const result = yield* riskyOperation().pipe(
-    Effect.mapError((e) => new MyCustomError({ cause: e }))
+    Effect.mapError((e) => new MyCustomError({ cause: e })),
   );
 
   if (!result) {
@@ -809,7 +821,7 @@ const batchWorkflow = Effect.gen(function* () {
 
   const results = yield* Effect.all(
     items.map((item) => processItem(item)),
-    { concurrency: 5 } // Limit to 5 concurrent operations
+    { concurrency: 5 }, // Limit to 5 concurrent operations
   );
 
   return results;
@@ -825,7 +837,7 @@ const configWorkflow = Effect.gen(function* () {
 
   // Number with default
   const timeout = yield* Config.number("TIMEOUT").pipe(
-    Config.withDefault(5000)
+    Config.withDefault(5000),
   );
 
   // Redacted (sensitive) configuration
@@ -882,7 +894,7 @@ const resourceWorkflow = Effect.gen(function* () {
     yield* releaseResource(resource);
   }
 }).pipe(
-  Effect.ensuring(cleanupEffect()) // Always runs cleanup
+  Effect.ensuring(cleanupEffect()), // Always runs cleanup
 );
 ```
 
@@ -892,7 +904,7 @@ const resourceWorkflow = Effect.gen(function* () {
 - Name should indicate what the function does
 - Use camelCase for function names
 - Include context in the name when helpful (e.g., "readFileAndParse" vs just "re
-ad")
+  ad")
 
 # Effect Layer Pattern
 
@@ -913,10 +925,8 @@ export const AppLayerLive = Layer.mergeAll(
   MyService.Default,
   AnotherService.Default,
   ThirdService.Default,
-
   // Platform layers
   NodeFileSystem.layer,
-
   // External service layers
   DatabaseLayer,
 );
@@ -979,10 +989,9 @@ import { NodeHttpServer } from "@effect/platform-node";
 export const AppLayer = Layer.mergeAll(
   // Your services
   MyService.Default,
-
   // Platform layers
-  NodeFileSystem.layer,    // For file system operations
-  NodeHttpServer.layer,    // For HTTP server
+  NodeFileSystem.layer, // For file system operations
+  NodeHttpServer.layer, // For HTTP server
 );
 ```
 
@@ -997,7 +1006,6 @@ export const TestLayer = Layer.mergeAll(
     readFile: Effect.succeed("mocked file content"),
     writeFile: Effect.succeed(undefined),
   }),
-
   Layer.succeed(DatabaseService, {
     query: Effect.succeed([]),
     save: Effect.succeed({ id: "test" }),
@@ -1051,13 +1059,14 @@ export const ScopedResourceLayer = Layer.scoped(
     const resource = yield* acquireResource();
     yield* Effect.addFinalizer(() => releaseResource(resource));
     return resource;
-  })
+  }),
 );
 ```
 
 ## Layer Composition Patterns
 
 ### Sequential Dependencies
+
 ```typescript
 // ServiceB depends on ServiceA
 export const LayerWithDependencies = Layer.mergeAll(
@@ -1067,14 +1076,13 @@ export const LayerWithDependencies = Layer.mergeAll(
 ```
 
 ### Conditional Layers
+
 ```typescript
 const conditionalLayer = Config.string("FEATURE_FLAG").pipe(
   Effect.map((flag) =>
-    flag === "enabled"
-      ? FeatureEnabledLayer
-      : FeatureDisabledLayer
+    flag === "enabled" ? FeatureEnabledLayer : FeatureDisabledLayer
   ),
-  Layer.unwrapEffect
+  Layer.unwrapEffect,
 );
 ```
 
@@ -1083,7 +1091,7 @@ const conditionalLayer = Config.string("FEATURE_FLAG").pipe(
 1. **Use Default Layers**: Prefer `Service.Default` over manual layer creation
 2. **Group Related Services**: Create logical groupings of related services
 3. **Platform Layers Last**: Include platform layers (NodeFileSystem, etc.) at t
-he end
+   he end
 4. **Test Layers**: Create separate test layers with mocked implementations
 5. **Environment Awareness**: Use different layers for different environments
 6. **Dependency Management**: Let services declare their own dependencies
@@ -1191,11 +1199,11 @@ Services can be easily mocked for testing by providing alternative implementatio
 ns:
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from "vitest";
 
 const TestService = new MyService({
-  doSomething: vi.fn().mockReturnValue('foo')
-})
+  doSomething: vi.fn().mockReturnValue("foo"),
+});
 ```
 
 # Effect TaggedError Pattern
@@ -1225,15 +1233,19 @@ export class ValidationError extends Data.TaggedError("ValidationError")<{
 ## Usage Examples
 
 ### Basic Error Creation
+
 ```typescript
 // In your Effect function
-return yield* Effect.fail(new SomeOperationError({
-  cause: error,
-  additionalInfo: "Additional context"
-}));
+return yield * Effect.fail(
+  new SomeOperationError({
+    cause: error,
+    additionalInfo: "Additional context",
+  }),
+);
 ```
 
 ### Error with Configuration
+
 ```typescript
 export class NoFilesFoundError extends Data.TaggedError("NoFilesFoundError")<{
   dir: string;
@@ -1248,10 +1260,11 @@ if (!files[0]) {
 ```
 
 ### Error Handling in Effects
+
 ```typescript
-yield* Effect.tryPromise(() => someAsyncOperation())
+yield * Effect.tryPromise(() => someAsyncOperation())
   .pipe(
-    Effect.mapError((e) => new SomeOperationError({ cause: e }))
+    Effect.mapError((e) => new SomeOperationError({ cause: e })),
   );
 ```
 
@@ -1272,12 +1285,14 @@ yield* Effect.tryPromise(() => someAsyncOperation())
 ## Integration with Effect.mapError
 
 ```typescript
-yield* fs.readFile(path)
+yield * fs.readFile(path)
   .pipe(
-    Effect.mapError((e) => new CouldNotReadFileError({
-      cause: e,
-      filePath: path
-    }))
+    Effect.mapError((e) =>
+      new CouldNotReadFileError({
+        cause: e,
+        filePath: path,
+      })
+    ),
   );
 ```
 
@@ -1302,7 +1317,7 @@ const myWorkflow = Effect.gen(function* () {
   const step1Result = yield* serviceA.doFirstStep(config);
 
   const step2Result = yield* serviceB.doSecondStep(step1Result).pipe(
-    Effect.mapError((e) => new Step2Error({ cause: e, input: step1Result }))
+    Effect.mapError((e) => new Step2Error({ cause: e, input: step1Result })),
   );
 
   // 3. Final processing
@@ -1330,7 +1345,7 @@ const processFileWorkflow = (inputPath: AbsolutePath) =>
 
     // Read and process file
     const content = yield* fs.readFileString(inputPath).pipe(
-      Effect.mapError((e) => new FileReadError({ cause: e, path: inputPath }))
+      Effect.mapError((e) => new FileReadError({ cause: e, path: inputPath })),
     );
 
     const processed = yield* processor.processContent(content);
@@ -1341,7 +1356,7 @@ const processFileWorkflow = (inputPath: AbsolutePath) =>
 
     yield* Effect.logInfo("File processed successfully", {
       input: inputPath,
-      output: outputPath
+      output: outputPath,
     });
 
     return outputPath;
@@ -1359,10 +1374,10 @@ const parallelProcessingWorkflow = (items: string[]) =>
     const results = yield* Effect.all(
       items.map((item) =>
         processor.processItem(item).pipe(
-          Effect.mapError((e) => new ItemProcessingError({ cause: e, item }))
+          Effect.mapError((e) => new ItemProcessingError({ cause: e, item })),
         )
       ),
-      { concurrency: 5 } // Limit concurrent operations
+      { concurrency: 5 }, // Limit concurrent operations
     );
 
     // Collect successful results
@@ -1396,7 +1411,7 @@ const conditionalWorkflow = (inputType: "video" | "audio") =>
 
       default:
         return yield* Effect.fail(
-          new UnsupportedInputTypeError({ inputType })
+          new UnsupportedInputTypeError({ inputType }),
         );
     }
   });
@@ -1424,8 +1439,8 @@ const resourceWorkflow = Effect.gen(function* () {
     Effect.all([
       releaseResource1().pipe(Effect.orElse(() => Effect.unit)),
       releaseResource2().pipe(Effect.orElse(() => Effect.unit)),
-    ])
-  )
+    ]),
+  ),
 );
 ```
 
@@ -1439,7 +1454,7 @@ const robustWorkflow = (input: string) =>
 
     // Try primary approach
     const primaryResult = yield* primaryService.process(input).pipe(
-      Effect.either
+      Effect.either,
     );
 
     if (Either.isRight(primaryResult)) {
@@ -1449,14 +1464,16 @@ const robustWorkflow = (input: string) =>
 
     // Fallback on error
     yield* Effect.logWarning("Primary processing failed, trying fallback", {
-      error: primaryResult.left
+      error: primaryResult.left,
     });
 
     const fallbackResult = yield* fallbackService.process(input).pipe(
-      Effect.mapError((e) => new FallbackFailedError({
-        cause: e,
-        originalError: primaryResult.left
-      }))
+      Effect.mapError((e) =>
+        new FallbackFailedError({
+          cause: e,
+          originalError: primaryResult.left,
+        })
+      ),
     );
 
     return fallbackResult;
@@ -1487,7 +1504,7 @@ const batchWorkflow = (items: string[], batchSize = 10) =>
 
       const batchResults = yield* Effect.all(
         batch.map((item) => processor.processItem(item)),
-        { concurrency: batchSize }
+        { concurrency: batchSize },
       );
 
       results.push(...batchResults);
@@ -1515,10 +1532,10 @@ const configurableWorkflow = Effect.gen(function* () {
     inputDir: yield* Config.string("INPUT_DIRECTORY"),
     outputDir: yield* Config.string("OUTPUT_DIRECTORY"),
     enableParallel: yield* Config.boolean("ENABLE_PARALLEL_PROCESSING").pipe(
-      Config.withDefault(true)
+      Config.withDefault(true),
     ),
     maxConcurrency: yield* Config.number("MAX_CONCURRENCY").pipe(
-      Config.withDefault(5)
+      Config.withDefault(5),
     ),
   };
 
@@ -1533,7 +1550,7 @@ const configurableWorkflow = Effect.gen(function* () {
     yield* Effect.logInfo("Using parallel processing");
     const results = yield* Effect.all(
       files.map((file) => processor.processFile(file)),
-      { concurrency: config.maxConcurrency }
+      { concurrency: config.maxConcurrency },
     );
     return results;
   } else {
@@ -1564,8 +1581,8 @@ test("workflow should process files correctly", async () => {
 
   const result = await Effect.runPromise(
     myWorkflow().pipe(
-      Effect.provide(Layer.mergeAll(mockProcessor, mockFs))
-    )
+      Effect.provide(Layer.mergeAll(mockProcessor, mockFs)),
+    ),
   );
 
   expect(result).toEqual(["processed-content", "processed-content"]);
@@ -1595,7 +1612,7 @@ export class WorkflowsService extends Effect.Service<WorkflowsService>()(
       };
     }),
     dependencies: [ServiceA.Default, ServiceB.Default],
-  }
+  },
 ) {}
 ```
 
