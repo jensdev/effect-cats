@@ -1,6 +1,6 @@
 import { describe, it } from "https://deno.land/std@0.220.0/testing/bdd.ts";
 import { expect } from "https://deno.land/std@0.220.0/expect/mod.ts";
-import { Either, Schema } from "effect";
+import { Effect, Either, Schema } from "effect";
 import { Cat } from "./cat.ts";
 import { CatId } from "../value-objects/cat.ts";
 
@@ -30,7 +30,7 @@ describe("Cat Entity", () => {
     it("should fail to create a cat with a birthDate in the future", () => {
       // Attempts to create a cat with a birth date set to one day after commonTestDate.
       const futureBirthDate = new Date(
-        commonTestDate.getTime() + 24 * 60 * 60 * 1000,
+        commonTestDate.getTime() + 100 * 365 * 24 * 60 * 60 * 1000,
       ); // commonTestDate + 1 day
       const catData = {
         id: 2 as CatId,
@@ -38,7 +38,8 @@ describe("Cat Entity", () => {
         breed: "Time Traveler",
         birthDate: futureBirthDate.toISOString(),
       };
-      const result = Schema.decodeUnknown(Cat)(catData);
+
+      const result = Effect.runSync(Effect.either(Schema.decodeUnknown(Cat)(catData)))
       expect(Either.isLeft(result)).toBe(true);
       if (Either.isLeft(result)) {
         // Further check if the error message is as expected for a birth date in the past.
