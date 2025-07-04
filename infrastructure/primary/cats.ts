@@ -7,8 +7,8 @@ export const catsApiLiveGroup = HttpApiBuilder.group(
   contract,
   "cats",
   (handlers) =>
-    Effect.gen(function* (_) {
-      const catsService = yield* _(CatsServicePort);
+    Effect.gen(function* () {
+      const catsService = yield* CatsServicePort;
       return handlers
         .handle("getAllCats", () => catsService.getAllCats)
         .handle("getCatById", ({ path: { id } }) => catsService.getCatById(id))

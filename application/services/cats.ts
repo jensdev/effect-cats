@@ -12,13 +12,17 @@ export const CatsServiceLive = Layer.effect(
     return {
       getAllCats: Effect.logDebug("getAllCats called").pipe(
         Effect.flatMap(() => repository.getAll),
-        Effect.tap((cats) => Effect.logInfo(`Retrieved ${cats.length} cats`)),
+        Effect.tap((cats) =>
+          Effect.logInfo(`Retrieved ${cats[0]} ${cats[0].age} cats`)
+        ),
         Effect.withSpan("CatsService/getAllCats"),
       ),
       getCatById: (id: CatId) =>
         Effect.logDebug(`getCatById called with id: ${id}`).pipe(
           Effect.flatMap(() => repository.getById(id)),
-          Effect.tap((cat) => Effect.logInfo(`Retrieved cat: ${cat.name}`)),
+          Effect.tap((cat) =>
+            Effect.logInfo(`Retrieved cat: ${JSON.stringify(cat, null, 2)}`)
+          ),
           Effect.tapErrorTag(
             "CatNotFound",
             (e) => Effect.logWarning(`Cat with id: ${e.id} not found`),
