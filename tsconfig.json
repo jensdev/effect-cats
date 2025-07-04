@@ -1,0 +1,16 @@
+{
+    "extends": "./deno.json",
+    "compilerOptions": {
+        "strict": true,
+        "target": "esnext",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "plugins": [
+            {
+                "name": "@effect/language-service"
+            }
+        ]
+    }
+}
