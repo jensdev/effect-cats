@@ -1,21 +1,13 @@
 import { describe, it } from "https://deno.land/std@0.220.0/testing/bdd.ts";
 import { expect } from "https://deno.land/std@0.220.0/expect/mod.ts";
-import {
-  Effect,
-  Schema,
-  TestContext,
-} from "effect"; // Import TestClock and TestContext from main "effect"
+import { Either, Schema } from "effect";
 import { Cat } from "./cat.ts";
 import { CatId } from "../value-objects/cat.ts";
 
-// Helper to run an Effect program with TestClock layer (now TestContext.TestContext)
-// The R type for effects using TestClock methods via TestContext is typically 'never' for requirements,
-// as TestClock is ambiently available when TestContext is provided.
-const runTestEffect = <E, A>(effect: Effect.Effect<A, E, never>) => {
-  return Effect.runPromise(Effect.provide(effect, TestContext.TestContext));
-};
-
-// Renamed to avoid confusion with the Cat model itself, and to signify it's for test setup.
+/**
+ * Helper function to create a Cat instance for testing purposes.
+ * Uses Schema.decodeUnknownSync for convenience, assuming valid test data.
+ */
 const createTestCatObject = (
   birthDate: Date,
   overrides: Partial<Cat> = {},
@@ -24,44 +16,50 @@ const createTestCatObject = (
     id: 1 as CatId,
     name: "Test Cat",
     breed: "Test Breed",
-    birthDate: birthDate.toISOString(), // Schema.Date expects string input for decoding
+    birthDate: birthDate.toISOString(),
     ...overrides,
   };
-  // Schema.decodeUnknownSync is fine for test setup where we expect data to be valid.
   return Schema.decodeUnknownSync(Cat)(catData);
 };
 
 describe("Cat Entity", () => {
   describe("getAgeAt", () => {
-    // A fixed date for tests that need a "current time" but don't modify it.
-    const commonTestDate = new Date("2023-06-15T10:00:00.000Z"); // June 15, 2023
+    // A fixed date used as the "current" date in tests to ensure consistent age calculations.
+    const commonTestDate = new Date("2023-06-15T10:00:00.000Z");
 
+    it("should fail to create a cat with a birthDate in the future", () => {
+      // Attempts to create a cat with a birth date set to one day after commonTestDate.
+      const futureBirthDate = new Date(
+        commonTestDate.getTime() + 24 * 60 * 60 * 1000,
+      ); // commonTestDate + 1 day
+      const catData = {
+        id: 2 as CatId,
+        name: "Future Cat",
+        breed: "Time Traveler",
+        birthDate: futureBirthDate.toISOString(),
+      };
+      const result = Schema.decodeUnknown(Cat)(catData);
+      expect(Either.isLeft(result)).toBe(true);
+      if (Either.isLeft(result)) {
+        // Further check if the error message is as expected for a birth date in the past.
+        // This depends on the exact error message defined in the Cat schema.
+        expect(result.left.message).toContain("Birth date must be in the past");
+      }
+    });
 
-    it("should correctly fail to create a cat with a birthday in the future", () =>
-      runTestEffect(
-        Effect.gen(function* () {
-          const birthDate = new Date("2021-05-10T00:00:00.000Z"); // May 10, 2021
-          const cat = createTestCatObject(birthDate);
-          expect(cat.getAgeAt(commonTestDate)).toBe(4);
-        }),
-      ));
+    it("should correctly calculate age for a cat whose birthday has passed this year", () => {
+      // Cat born May 10, 2021. Current test date is June 15, 2023. Expected age: 2.
+      const birthDate = new Date("2021-05-10T00:00:00.000Z");
+      const cat = createTestCatObject(birthDate);
+      expect(cat.getAgeAt(commonTestDate)).toBe(2);
+    });
 
-    it("should correctly calculate age for a cat whose birthday has passed this year", () =>
-      runTestEffect(
-        Effect.gen(function* (_) {
-          const birthDate = new Date("2021-05-10T00:00:00.000Z"); // May 10, 2021
-          const cat = createTestCatObject(birthDate);
-          expect(cat.getAgeAt(commonTestDate)).toBe(2);
-        }),
-      ));
-
-    it("should correctly calculate age for a cat whose birthday is yet to come this year", () =>
-      runTestEffect(
-        Effect.gen(function* (_) {
-          const birthDate = new Date("2021-08-20T00:00:00.000Z"); // August 20, 2021
-          const cat = createTestCatObject(birthDate);
-          expect(cat.age).toBe(3);
-        }),
-      ));
+    it("should correctly calculate age for a cat whose birthday is yet to come this year", () => {
+      // Cat born August 20, 2019. Current test date is June 15, 2023. Expected age: 3.
+      // (Birthday for 2023 hasn't occurred yet relative to commonTestDate).
+      const birthDate = new Date("2019-08-20T00:00:00.000Z");
+      const cat = createTestCatObject(birthDate);
+      expect(cat.getAgeAt(commonTestDate)).toBe(3);
+    });
   });
 });
