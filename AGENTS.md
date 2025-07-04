@@ -111,18 +111,6 @@ This project uses [Effect-TS](https://effect.website) for functional programming
 - Orchestrate multiple services for complex business logic
 - Use `Effect.gen` to coordinate between services
 
-## Project Structure
-
-```
-packages/ffmpeg/src/
-├── services.ts          # Core services with Effect.Service pattern
-├── workflows.ts         # High-level workflows using Effect.gen
-├── ffmpeg-commands.ts   # FFmpeg operations as Effect functions
-├── app-layer.ts         # Application layer composition
-├── queue/               # Queue management services
-└── __tests__/           # Tests using Effect patterns
-```
-
 ## Common Imports
 
 ```typescript
