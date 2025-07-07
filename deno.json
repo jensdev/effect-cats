@@ -28,5 +28,8 @@
     "indentWidth": 2,
     "singleQuote": false
   },
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "unstable": [
+    "sloppy-imports"
+  ]
 }

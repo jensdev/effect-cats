@@ -10,13 +10,12 @@ export const CatsServiceLive = Layer.effect(
     const repository = yield* _(CatsRepositoryPort);
 
     return {
-      getAllCats: Effect.fn("CatsService/getAllCats")(
-        Effect.logDebug("getAllCats called").pipe(
-          Effect.flatMap(() => repository.getAll),
-          Effect.tap((cats) =>
-            Effect.logInfo(`Retrieved ${cats[0]} ${cats[0].age} cats`)
-          ),
+      getAllCats: Effect.logDebug("getAllCats called").pipe(
+        Effect.flatMap(() => repository.getAll),
+        Effect.tap((cats) =>
+          Effect.logInfo(`Retrieved ${cats.length} cats`)
         ),
+        Effect.withSpan("CatsService/getAllCats"),
       ),
       getCatById: Effect.fn("CatsService/getCatById")((id: CatId) =>
         Effect.logDebug(`getCatById called with id: ${id}`).pipe(

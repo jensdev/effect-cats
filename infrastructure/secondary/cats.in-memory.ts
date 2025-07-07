@@ -13,8 +13,8 @@ export const CatsRepositoryInMemoryLive = Layer.sync(
     const getNextId = (): CatId => CatId.make(nextId++);
 
     return {
-      getAll: Effect.fn("CatsRepository/getAll")(
-        Effect.sync(() => Array.fromIterable(catsStore.values())),
+      getAll: Effect.sync(() => Array.fromIterable(catsStore.values())).pipe(
+        Effect.withSpan("CatsRepository/getAll"),
       ),
       getById: Effect.fn("CatsRepository/getById")((id: CatId) =>
         Option.fromNullable(catsStore.get(id)).pipe(
