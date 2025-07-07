@@ -7,11 +7,11 @@
     "jsr:@std/internal@^1.0.6": "1.0.8",
     "jsr:@std/internal@^1.0.8": "1.0.8",
     "jsr:@std/testing@*": "1.0.14",
-    "npm:@effect/language-service@~0.23.3": "0.23.3",
-    "npm:@effect/platform-node@~0.85.16": "0.85.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7",
-    "npm:@effect/platform@~0.84.11": "0.84.11_effect@3.16.7",
+    "npm:@effect/language-service@~0.23.5": "0.23.5",
+    "npm:@effect/platform-node@~0.89.2": "0.89.2_@effect+cluster@0.41.14__@effect+platform@0.87.10___effect@3.16.12__@effect+rpc@0.64.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+sql@0.40.11___@effect+experimental@0.51.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+workflow@0.4.11___@effect+platform@0.87.10____effect@3.16.12___@effect+rpc@0.64.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___effect@3.16.12__effect@3.16.12_@effect+platform@0.87.10__effect@3.16.12_@effect+rpc@0.64.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+sql@0.40.11__@effect+experimental@0.51.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_effect@3.16.12",
+    "npm:@effect/platform@~0.87.10": "0.87.10_effect@3.16.12",
     "npm:@types/node@*": "22.15.15",
-    "npm:effect@^3.16.7": "3.16.7",
+    "npm:effect@^3.16.12": "3.16.12",
     "npm:typescript@^5.8.3": "5.8.3"
   },
   "jsr": {
@@ -73,8 +73,8 @@
       "os": ["win32"],
       "cpu": ["x64"]
     },
-    "@effect/cluster@0.38.16_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+workflow@0.1.14__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-Q3UJmDx/ABn3Rx/S6n9O8f2TS1qrJNbP0W6lfouel9JduvDW/1dKQ1dFJYRNCk3i5mcpPTSGn47Oq08muArrqw==",
+    "@effect/cluster@0.41.14_@effect+platform@0.87.10__effect@3.16.12_@effect+rpc@0.64.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+sql@0.40.11__@effect+experimental@0.51.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+workflow@0.4.11__@effect+platform@0.87.10___effect@3.16.12__@effect+rpc@0.64.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-ODj6dMUBvYPWpFYcgB4o16YFKxo009K5rQze4gNLQZlvw3M8TigEptAAdEW1YqdrcwzKf2XWQbXLGIJ/WabXfw==",
       "dependencies": [
         "@effect/platform",
         "@effect/rpc",
@@ -83,19 +83,19 @@
         "effect"
       ]
     },
-    "@effect/experimental@0.48.12_@effect+platform@0.84.11__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-tRCt57mdArna62L3xu7HIlGXOwHoUDZOQCbMqzQX29TtMflY26mCb9GF3/6s2DsTDWVUCCOroHnfA/XNP+uS/w==",
+    "@effect/experimental@0.51.11_@effect+platform@0.87.10__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-Z4om33NdQFUReGWjcrmihfwSMfUVDIGoxCFrvnzV9Adg3VCLx9soqsehatK7GhPH9m71KiScAOSk+C/Y/GPWYg==",
       "dependencies": [
         "@effect/platform",
         "effect",
         "uuid"
       ]
     },
-    "@effect/language-service@0.23.3": {
-      "integrity": "sha512-yurF+FHd1HwM/3Mh7kQCea+z4wvbs2/NLPyk6FiEWA2sppRKv4Kp4luwfUqWqyd9/uyScWJcHX7WK1caLpx4Pw=="
+    "@effect/language-service@0.23.5": {
+      "integrity": "sha512-aQN24eziWuqK/EdFhhZ2Jr/CZgYxNfsP9r7DT7jCYgJWhZ8HPO39hyHcij14cMv41ZM8j0p8lmBnHYZwYN1Wyg=="
     },
-    "@effect/platform-node-shared@0.39.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-aJ7jVm9V+SEeNumRmHb+TxD0C38uv/1LLfBHB2Qg+xb5UjnZhak8SzwolAgSKkMNDFpAAdF2AlxZ1tO/HfhCiw==",
+    "@effect/platform-node-shared@0.42.14_@effect+cluster@0.41.14__@effect+platform@0.87.10___effect@3.16.12__@effect+rpc@0.64.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+sql@0.40.11___@effect+experimental@0.51.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+workflow@0.4.11___@effect+platform@0.87.10____effect@3.16.12___@effect+rpc@0.64.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___effect@3.16.12__effect@3.16.12_@effect+platform@0.87.10__effect@3.16.12_@effect+rpc@0.64.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+sql@0.40.11__@effect+experimental@0.51.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-X1BNTy+OtEQHyQ+vOp+1kLghnfcm4JRNF2zfnQIcm6bTcZduDkQiWyPfl1O9suqvUf/RJAZf5BGI0SMb44bS8Q==",
       "dependencies": [
         "@effect/cluster",
         "@effect/platform",
@@ -107,8 +107,8 @@
         "ws"
       ]
     },
-    "@effect/platform-node@0.85.16_@effect+cluster@0.38.16__@effect+platform@0.84.11___effect@3.16.7__@effect+rpc@0.61.15___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+sql@0.37.12___@effect+experimental@0.48.12____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+workflow@0.1.14___@effect+platform@0.84.11____effect@3.16.7___@effect+rpc@0.61.15____@effect+platform@0.84.11_____effect@3.16.7____effect@3.16.7___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+sql@0.37.12__@effect+experimental@0.48.12___@effect+platform@0.84.11____effect@3.16.7___effect@3.16.7__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-d1vAuQxLXLEiN/kGAlmXy357xXgInLZIT8BfCLcOdmc6yCWFs4n5shxWEhgMAwsgPNiMI4pFDE/2c3g2DZzR3w==",
+    "@effect/platform-node@0.89.2_@effect+cluster@0.41.14__@effect+platform@0.87.10___effect@3.16.12__@effect+rpc@0.64.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+sql@0.40.11___@effect+experimental@0.51.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+workflow@0.4.11___@effect+platform@0.87.10____effect@3.16.12___@effect+rpc@0.64.11____@effect+platform@0.87.10_____effect@3.16.12____effect@3.16.12___effect@3.16.12__effect@3.16.12_@effect+platform@0.87.10__effect@3.16.12_@effect+rpc@0.64.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+sql@0.40.11__@effect+experimental@0.51.11___@effect+platform@0.87.10____effect@3.16.12___effect@3.16.12__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-5FtUwTufEwwYdw7C3ZZUi6kAMvXLHJ36cFRRoeSFBFBtHeeDM9oSdyn2exlrbsNxlpTL2hv80zht3hhMAZiNtA==",
       "dependencies": [
         "@effect/cluster",
         "@effect/platform",
@@ -121,8 +121,8 @@
         "ws"
       ]
     },
-    "@effect/platform@0.84.11_effect@3.16.7": {
-      "integrity": "sha512-u3eURhaF38e8jqq/JC2NW9EDHUFVDETD/JLEFtFi7N6RnAUF90qaC8sRcoK5xe8UAo3/fJDQ+sEfDqYonUa30w==",
+    "@effect/platform@0.87.10_effect@3.16.12": {
+      "integrity": "sha512-6deul1mycjetR4iFEqSFgCWGcAdlaYQVKycHT89KfXc8aRasM/lN4770PznNVuT5iOM9/I9HxMzL3Bj5sA/Xyg==",
       "dependencies": [
         "effect",
         "find-my-way-ts",
@@ -130,15 +130,15 @@
         "multipasta"
       ]
     },
-    "@effect/rpc@0.61.15_@effect+platform@0.84.11__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-1PdFubnHanzyswxEzYTiPhTaNpnzS+ssm8xsOKIjE1CP+f54mx/5rJl7BY1VqBVcxw9faqq0g5+biMh9e2RN/Q==",
+    "@effect/rpc@0.64.11_@effect+platform@0.87.10__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-SyedMPjB0CE3/BXLZB601jFb5ZSyD3vlq8XCU2kHaoxDQfMT4umh/PoEhQUhPa3nft8ZL7OkwQqaUx2P8fmNNw==",
       "dependencies": [
         "@effect/platform",
         "effect"
       ]
     },
-    "@effect/sql@0.37.12_@effect+experimental@0.48.12__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_@effect+platform@0.84.11__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-DZarU+4NTwIYO8MALaRVg1rRN5gdrJW7nJLECl6nSTwbXRamo6GSarXUiACqE4csZZ7C2K6Jtu99UbEqZ3Iomw==",
+    "@effect/sql@0.40.11_@effect+experimental@0.51.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_@effect+platform@0.87.10__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-5Ys/OQEmBq6z3MJKa3W803rp9p1yni0ISDKSuKH1lhgdR8FWSMRWLe42s9stJHijvMvvoCUPO+MZjZ6m1UAFdg==",
       "dependencies": [
         "@effect/experimental",
         "@effect/platform",
@@ -147,8 +147,8 @@
         "uuid"
       ]
     },
-    "@effect/workflow@0.1.14_@effect+platform@0.84.11__effect@3.16.7_@effect+rpc@0.61.15__@effect+platform@0.84.11___effect@3.16.7__effect@3.16.7_effect@3.16.7": {
-      "integrity": "sha512-0BTIbCp1rJMOzXGUfk9E7IHU9up6rzLztbjVUGDlnKhAtus04GUeA95wP5t8qdhg/I7Q7FlkKfa07WFppkNCsQ==",
+    "@effect/workflow@0.4.11_@effect+platform@0.87.10__effect@3.16.12_@effect+rpc@0.64.11__@effect+platform@0.87.10___effect@3.16.12__effect@3.16.12_effect@3.16.12": {
+      "integrity": "sha512-Omq1KcYYdPYgaw/hxbRtNuSPxY5vTyMZ46D9GoEgDysnHCe1+wrBxlvtdIyI5kKoxB3Gm7dExuxhtJ791ABxSQ==",
       "dependencies": [
         "@effect/platform",
         "@effect/rpc",
@@ -300,8 +300,8 @@
     "detect-libc@2.0.4": {
       "integrity": "sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA=="
     },
-    "effect@3.16.7": {
-      "integrity": "sha512-UEE1lXpXrx3h+HGgKDaNlyBpHanpjBdSbxAPl0lEQJ6dFyc8Fs22D6zLMp2HkS22H50GS7ZEVpSeO52He+9oTw==",
+    "effect@3.16.12": {
+      "integrity": "sha512-N39iBk0K71F9nb442TLbTkjl24FLUzuvx2i1I2RsEAQsdAdUTuUoW0vlfUXgkMTUOnYqKnWcFfqw4hK4Pw27hg==",
       "dependencies": [
         "@standard-schema/spec",
         "fast-check"
@@ -434,15 +434,15 @@
     "undici-types@6.21.0": {
       "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="
     },
-    "undici@7.10.0": {
-      "integrity": "sha512-u5otvFBOBZvmdjWLVW+5DAc9Nkq8f24g0O9oY7qw2JVIF1VocIFoyz9JFkuVOS2j41AufeO0xnlweJ2RLT8nGw=="
+    "undici@7.11.0": {
+      "integrity": "sha512-heTSIac3iLhsmZhUCjyS3JQEkZELateufzZuBaVM5RHXdSBMb1LPMQf5x+FH7qjsZYDP0ttAc3nnVpUB+wYbOg=="
     },
     "uuid@11.1.0": {
       "integrity": "sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==",
       "bin": true
     },
-    "ws@8.18.2": {
-      "integrity": "sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ=="
+    "ws@8.18.3": {
+      "integrity": "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="
     }
   },
   "remote": {
@@ -486,10 +486,10 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "npm:@effect/language-service@~0.23.3",
-      "npm:@effect/platform-node@~0.85.16",
-      "npm:@effect/platform@~0.84.11",
-      "npm:effect@^3.16.7",
+      "npm:@effect/language-service@~0.23.5",
+      "npm:@effect/platform-node@~0.89.2",
+      "npm:@effect/platform@~0.87.10",
+      "npm:effect@^3.16.12",
       "npm:typescript@^5.8.3"
     ]
   }
