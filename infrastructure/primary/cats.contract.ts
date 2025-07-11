@@ -3,6 +3,7 @@ import { Schema } from "effect";
 import { Cat } from "../../domain/entities/cat.ts";
 import { CatIdFromString } from "../../domain/value-objects/cat.ts";
 import { CatNotFound } from "../../domain/errors/cat-not-found.ts";
+import { CatInvalid } from "../../domain/errors/cat-invalid.ts";
 
 export const catsApiGroup = HttpApiGroup.make("cats")
   .add(HttpApiEndpoint.get("getAllCats", "/cats").addSuccess(Schema.Array(Cat)))
@@ -15,6 +16,7 @@ export const catsApiGroup = HttpApiGroup.make("cats")
   .add(
     HttpApiEndpoint.post("createCat", "/cats")
       .addSuccess(Cat)
+      .addError(CatInvalid, { status: 400 })
       .setPayload(
         Schema.Struct(Cat.fields).pipe(Schema.omit("id")),
       ),

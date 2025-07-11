@@ -14,8 +14,8 @@ export const catsApiLiveGroup = HttpApiBuilder.group(
         .handle("getCatById", ({ path: { id } }) => catsService.getCatById(id))
         .handle(
           "createCat",
-          ({ payload: { name, breed, birthDate } }) =>
-            catsService.createCat(name, breed, birthDate),
+          ({ payload: { name, breed, birthDate, deathDate } }) =>
+            catsService.createCat(name, breed, birthDate, deathDate)
         )
         .handle(
           "updateCat",

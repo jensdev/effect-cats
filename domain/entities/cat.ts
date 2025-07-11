@@ -41,8 +41,11 @@ const catSchemaFinal = pipe(
   catStruct,
   Schema.filter(
     (cat: Schema.Schema.Type<typeof catStruct>) => cat.deathDate == null || cat.deathDate > cat.birthDate, // Check for null or undefined
-    { message: () => "Death date must be after birth date" }
-  )
+    {
+      message: () => "Death date must be after birth date",
+      jsonSchema: { message: "Death date must be after birth date" }
+    }
+  ),
 );
 
 export class Cat extends Schema.Class<Cat>("Cat")(catSchemaFinal) {

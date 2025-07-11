@@ -1,8 +1,9 @@
-import { Array, Effect, Layer, Option } from "effect";
+import { Array, Effect, Either, Layer, Option, Schema } from "effect";
 import { CatsRepositoryPort } from "../../application/ports/out/cat.repository.ts";
 import { Cat } from "../../domain/entities/cat.ts";
 import { CatNotFound } from "../../domain/errors/cat-not-found.ts";
 import { CatId } from "../../domain/value-objects/cat.ts";
+import { CatInvalid } from "../../domain/errors/cat-invalid.ts";
 
 export const CatsRepositoryInMemoryLive = Layer.sync(
   CatsRepositoryPort,
@@ -21,15 +22,20 @@ export const CatsRepositoryInMemoryLive = Layer.sync(
           Effect.mapError(() => new CatNotFound({ id })),
         )
       ),
-      create: Effect.fn("CatsRepository/create")(
-        (name: string, breed: string, birthDate: Date) =>
-          Effect.sync(() => {
-            const id = getNextId();
-            const newCat = new Cat({ id, name, breed, birthDate });
-            catsStore.set(id, newCat);
-            return newCat;
-          }),
-      ),
+      create: (name: string, breed: string, birthDate: Date, deathDate?: Date) =>
+        Effect.gen(function* (_) {
+          const id = getNextId();
+          const safeMakeCat = Schema.validateEither(Cat)
+          return yield* Either.match(
+            safeMakeCat({ id, name, breed, birthDate, deathDate }),
+            {
+              onLeft: (left) => Effect.fail(new CatInvalid({ issue: left.issue })),
+              onRight: (right) => {
+                catsStore.set(id, right)
+                return Effect.succeed(right)
+              }
+            })
+        }),
       update: Effect.fn("CatsRepository/update")(
         (id: CatId, data: Partial<Omit<Cat, "id" | "age">>) =>
           Effect.gen(function* (_) {

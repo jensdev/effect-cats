@@ -2,6 +2,7 @@ import { Context, Effect } from "effect";
 import { CatId } from "../../../domain/value-objects/cat.ts";
 import { Cat } from "../../../domain/entities/cat.ts";
 import { CatNotFound } from "../../../domain/errors/cat-not-found.ts";
+import { CatInvalid } from "../../../domain/errors/cat-invalid.ts";
 
 export class CatsServicePort extends Context.Tag("Cats/Service")<
   CatsServicePort,
@@ -12,11 +13,12 @@ export class CatsServicePort extends Context.Tag("Cats/Service")<
       name: string,
       breed: string,
       birthDate: Date,
-    ) => Effect.Effect<Cat, never>;
+      deathDate?: Date,
+    ) => Effect.Effect<Cat, CatInvalid>;
     readonly updateCat: (
       id: CatId,
       data: Partial<Omit<Cat, "id">>,
     ) => Effect.Effect<Cat, CatNotFound>;
     readonly deleteCat: (id: CatId) => Effect.Effect<void, CatNotFound>;
   }
->() {}
+>() { }

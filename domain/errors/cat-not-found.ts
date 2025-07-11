@@ -5,4 +5,4 @@ export class CatNotFound extends Schema.TaggedError<CatNotFound>()(
   {
     id: Schema.Number, // Refers to the ID by which cat was not found
   },
-) {}
+) { }
